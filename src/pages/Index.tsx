@@ -54,14 +54,6 @@ const Index = () => {
                 Começar Grátis
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                onClick={() => navigate("/auth")} 
-                className="text-lg h-14 px-8 border-2 hover:border-primary/50 transition-colors"
-              >
-                Ver Demonstração
-              </Button>
             </div>
             
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground pt-4">
