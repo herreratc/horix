@@ -25,12 +25,17 @@ const Index = () => {
               <span className="text-sm font-medium">Novo: Agendamento Público</span>
             </div>
             
-            <div className="flex justify-center mb-6">
-              <img 
-                src={logo} 
-                alt="Horix" 
-                className="h-24 w-auto animate-float-animation"
-              />
+            <div className="flex justify-center mb-8">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-60 animate-pulse group-hover:opacity-80 transition-opacity" />
+                <div className="relative bg-card/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-primary/30 shadow-2xl transform group-hover:scale-105 transition-transform float-animation">
+                  <img 
+                    src={logo} 
+                    alt="Horix" 
+                    className="h-28 w-auto drop-shadow-2xl"
+                  />
+                </div>
+              </div>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">

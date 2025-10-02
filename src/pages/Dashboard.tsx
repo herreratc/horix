@@ -124,8 +124,10 @@ export default function Dashboard() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-                <img src={logo} alt="Horix" className="relative h-14 w-auto" />
+                <div className="absolute inset-0 bg-gradient-primary rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                <div className="relative bg-card/80 backdrop-blur-sm p-4 rounded-2xl border-2 border-primary/30 shadow-lg transform group-hover:scale-105 transition-transform">
+                  <img src={logo} alt="Horix" className="h-16 w-auto drop-shadow-2xl" />
+                </div>
               </div>
               <div className="space-y-1">
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">

@@ -9,6 +9,8 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMont
 import { ptBR } from "date-fns/locale";
 import LembreteButton from "@/components/LembreteButton";
 import LembretesAutomaticos from "@/components/LembretesAutomaticos";
+import CancelarAgendamentoButton from "@/components/CancelarAgendamentoButton";
+import LembretesHoje from "@/components/LembretesHoje";
 
 interface Agendamento {
   id: string;
@@ -131,6 +133,9 @@ export default function Agenda() {
             </Button>
           </div>
         </div>
+
+        {/* Lembretes Pendentes */}
+        <LembretesHoje />
 
         <div className="grid md:grid-cols-3 gap-6">
           {/* Calendar */}
@@ -264,15 +269,26 @@ export default function Agenda() {
                     {agend.servico && (
                       <p className="text-xs text-muted-foreground">{agend.servico}</p>
                     )}
-                    {agend.status !== "cancelado" && agend.clientes && (
-                      <LembreteButton
-                        clienteNome={agend.clientes.nome}
-                        clienteWhatsapp={agend.clientes.whatsapp}
-                        data={agend.data}
-                        hora={agend.hora}
-                        servico={agend.servico}
-                      />
-                    )}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {agend.status !== "cancelado" && agend.clientes && (
+                        <>
+                          <LembreteButton
+                            clienteNome={agend.clientes.nome}
+                            clienteWhatsapp={agend.clientes.whatsapp}
+                            data={agend.data}
+                            hora={agend.hora}
+                            servico={agend.servico}
+                          />
+                          <CancelarAgendamentoButton
+                            agendamentoId={agend.id}
+                            clienteNome={agend.clientes.nome}
+                            data={agend.data}
+                            hora={agend.hora}
+                            onCanceled={loadData}
+                          />
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

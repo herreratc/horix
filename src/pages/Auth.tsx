@@ -90,16 +90,21 @@ export default function Auth() {
       <div className="relative w-full max-w-md animate-fade-in-up">
         <Card className="border-2 border-border/50 backdrop-blur-xl bg-card/50 shadow-2xl">
           <CardHeader className="text-center space-y-4 pb-8">
-            <div className="flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-primary rounded-2xl blur-xl opacity-50 animate-pulse" />
-                <img 
-                  src={logo} 
-                  alt="Horix" 
-                  className="relative h-20 w-auto"
-                />
+            <div className="flex justify-center mb-2">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-60 animate-pulse group-hover:opacity-80 transition-opacity" />
+                <div className="relative bg-card/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-primary/30 shadow-2xl transform group-hover:scale-105 transition-transform">
+                  <img 
+                    src={logo} 
+                    alt="Horix" 
+                    className="h-24 w-auto drop-shadow-2xl"
+                  />
+                </div>
               </div>
             </div>
+            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Horix
+            </h1>
             <div className="space-y-2">
               <CardDescription className="text-base">
                 Sistema Inteligente de Agendamentos

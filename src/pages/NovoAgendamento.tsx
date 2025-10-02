@@ -97,9 +97,17 @@ export default function NovoAgendamento() {
         status: "agendado",
       };
 
-      const { error } = await supabase
+      const { data: novoAgendamento, error } = await supabase
         .from("agendamentos")
-        .insert([agendamentoData]);
+        .insert([agendamentoData])
+        .select(`
+          *,
+          clientes (
+            nome,
+            whatsapp
+          )
+        `)
+        .single();
 
       if (error) throw error;
 
@@ -112,6 +120,33 @@ export default function NovoAgendamento() {
       }
 
       toast.success("Agendamento criado com sucesso");
+      
+      // Abrir WhatsApp automaticamente se cliente tiver WhatsApp
+      if (novoAgendamento?.clientes?.whatsapp) {
+        const telefone = novoAgendamento.clientes.whatsapp.replace(/\D/g, "");
+        const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
+          weekday: 'long',
+          day: '2-digit',
+          month: 'long'
+        });
+        
+        const mensagem = `Olá, ${novoAgendamento.clientes.nome}! 👋
+
+📅 *Confirmação de Agendamento*
+
+${servico ? `🔹 Serviço: *${servico}*\n` : ''}🔹 Data: *${dataFormatada}*
+🔹 Horário: *${hora}*
+
+Seu agendamento foi confirmado! Te espero no horário marcado.
+
+Qualquer dúvida, estou à disposição! 😊`;
+        
+        const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+        window.open(url, "_blank");
+        
+        toast.success("WhatsApp aberto! Envie a confirmação 💬", { duration: 4000 });
+      }
+      
       navigate("/agenda");
     } catch (error: any) {
       toast.error(error.message || "Erro ao criar agendamento");
