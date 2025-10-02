@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Users, BarChart3, Settings, Plus, Copy, Share2, Sparkles, TrendingUp, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -88,11 +89,14 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.profissao}</span> 👋
-              </h1>
-              <p className="text-muted-foreground">Bem-vindo ao seu painel de controle</p>
+            <div className="flex items-center gap-4">
+              <img src={logo} alt="Horix" className="h-12 w-auto" />
+              <div className="space-y-1">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.profissao}</span> 👋
+                </h1>
+                <p className="text-muted-foreground">Bem-vindo ao seu painel de controle</p>
+              </div>
             </div>
             <Button 
               variant="outline" 

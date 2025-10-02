@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import logo from "@/assets/logo.png";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -92,17 +93,16 @@ export default function Auth() {
             <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-primary rounded-2xl blur-xl opacity-50 animate-pulse" />
-                <div className="relative h-16 w-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-lg">
-                  <Calendar className="h-8 w-8 text-white" />
-                </div>
+                <img 
+                  src={logo} 
+                  alt="Horix" 
+                  className="relative h-20 w-auto"
+                />
               </div>
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Agenda Inteligente
-              </CardTitle>
               <CardDescription className="text-base">
-                Transforme a forma como você gerencia seu tempo
+                Sistema Inteligente de Agendamentos
               </CardDescription>
             </div>
           </CardHeader>

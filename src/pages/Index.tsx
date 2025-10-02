@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,14 +25,18 @@ const Index = () => {
               <span className="text-sm font-medium">Novo: Agendamento Público</span>
             </div>
             
+            <div className="flex justify-center mb-6">
+              <img 
+                src={logo} 
+                alt="Horix" 
+                className="h-24 w-auto animate-float-animation"
+              />
+            </div>
+            
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
-              Sua Agenda{" "}
+              Sistema de Agendamentos{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
                 Inteligente
-              </span>
-              <br />
-              <span className="text-muted-foreground text-3xl md:text-5xl">
-                para Profissionais Modernos
               </span>
             </h1>
             
@@ -322,11 +327,10 @@ const Index = () => {
         {/* Footer */}
         <footer className="border-t border-border/50 px-4 py-12 backdrop-blur-sm bg-card/30">
           <div className="max-w-6xl mx-auto text-center space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <Calendar className="h-6 w-6 text-primary" />
-              <span className="font-semibold text-lg">Agenda Inteligente</span>
+            <div className="flex items-center justify-center gap-3">
+              <img src={logo} alt="Horix" className="h-8 w-auto" />
             </div>
-            <p className="text-muted-foreground">© 2025 Agenda Inteligente. Todos os direitos reservados.</p>
+            <p className="text-muted-foreground">© 2025 Horix. Todos os direitos reservados.</p>
           </div>
         </footer>
       </div>
