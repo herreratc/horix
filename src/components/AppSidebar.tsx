@@ -1,0 +1,101 @@
+import { NavLink, useLocation } from "react-router-dom";
+import { Calendar, Users, BarChart3, Settings, Briefcase, LogOut, Home } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarFooter,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import logo from "@/assets/logo.png";
+
+const menuItems = [
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Agenda", url: "/agenda", icon: Calendar },
+  { title: "Clientes", url: "/clientes", icon: Users },
+  { title: "Serviços", url: "/servicos", icon: Briefcase },
+  { title: "Relatórios", url: "/relatorios", icon: BarChart3 },
+  { title: "Configurações", url: "/configuracoes", icon: Settings },
+];
+
+export function AppSidebar() {
+  const { state } = useSidebar();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const collapsed = state === "collapsed";
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Logout realizado com sucesso");
+    navigate("/auth");
+  };
+
+  const getNavClass = (isActive: boolean) => {
+    return isActive 
+      ? "bg-primary text-primary-foreground font-medium hover:bg-primary hover:text-primary-foreground" 
+      : "hover:bg-accent/10 hover:text-accent-foreground";
+  };
+
+  return (
+    <Sidebar collapsible="icon" className="border-r border-border">
+      <SidebarContent>
+        {/* Logo */}
+        <div className="p-4 flex items-center justify-center border-b border-border">
+          {!collapsed ? (
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="Horix" className="h-10 w-auto drop-shadow-lg" />
+              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                HORIX
+              </span>
+            </div>
+          ) : (
+            <img src={logo} alt="Horix" className="h-8 w-auto drop-shadow-lg" />
+          )}
+        </div>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.url} 
+                        className={getNavClass(isActive)}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive">
+              <LogOut className="h-5 w-5" />
+              {!collapsed && <span>Sair</span>}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}

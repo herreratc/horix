@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, BarChart3, Settings, Plus, Share2, Sparkles, TrendingUp, Clock, CheckCircle2, AlertCircle, Briefcase } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Calendar, Users, TrendingUp, CheckCircle2, Plus, AlertCircle, Sparkles, Share2, Copy } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import logo from "@/assets/logo.png";
+import { DashboardLayout } from "@/components/DashboardLayout";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ export default function Dashboard() {
   const copyLinkPublico = () => {
     const link = `${window.location.origin}/p/${user.id}`;
     navigator.clipboard.writeText(link);
-    toast.success("Link copiado! Compartilhe com seus clientes 🎉");
+    toast.success("Link copiado! 🎉");
   };
 
   if (!user || !profile) {
@@ -111,325 +111,248 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="fixed inset-0">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
-      </div>
+    <DashboardLayout>
+      <div className="p-4 md:p-8 space-y-8">
+        {/* Welcome Header */}
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.nome || profile.profissao}</span> 👋
+          </h1>
+          <p className="text-muted-foreground">Aqui está um resumo do seu dia</p>
+        </div>
 
-      <div className="relative z-10 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-6">
-              <img 
-                src={logo} 
-                alt="Horix" 
-                className="h-32 w-auto hover:scale-110 transition-transform duration-300 cursor-pointer drop-shadow-2xl" 
-              />
-              <div className="space-y-1">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.nome || profile.profissao}</span> 👋
-                </h1>
-                <p className="text-muted-foreground">Aqui está um resumo do seu dia</p>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/configuracoes")}
-              className="gap-2 border-2 hover:border-primary/50 transition-colors"
-            >
-              <Settings className="h-4 w-4" />
-              Configurações
-            </Button>
-          </div>
-
-          {/* Plano Status & Quick Actions Row */}
-          <div className="grid gap-4 lg:grid-cols-2">
-            {/* Plano Status */}
-            {isFreePlan && (
-              <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 backdrop-blur-sm overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-accent flex items-center justify-center shadow-md">
-                          <Sparkles className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-lg">Plano Free</p>
-                          <p className="text-sm text-muted-foreground">
-                            {profile.agendamentos_mes}/30 agendamentos
-                          </p>
-                        </div>
-                      </div>
-                      <Button 
-                        onClick={() => navigate("/assinatura")}
-                        size="sm"
-                        className="bg-gradient-primary hover:opacity-90 gap-2 shadow-md"
-                      >
-                        <Sparkles className="h-3 w-3" />
-                        Upgrade
-                      </Button>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Uso mensal</span>
-                        <span>{Math.round(usagePercentage)}%</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className={`h-full transition-all duration-500 ${
-                            usagePercentage > 80 ? 'bg-gradient-to-r from-destructive to-accent' : 'bg-gradient-accent'
-                          }`}
-                          style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Link Público - Compacto */}
-            <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Share2 className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold mb-1">Link de Agendamento</h3>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {window.location.origin}/p/{user.id}
-                    </p>
-                  </div>
-                  <Button 
-                    onClick={copyLinkPublico} 
-                    size="sm"
-                    className="gap-2 bg-gradient-primary hover:opacity-90 shadow-md flex-shrink-0"
-                  >
-                    Copiar
-                  </Button>
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              title: "Total Agendamentos",
+              value: stats.agendamentos,
+              icon: Calendar,
+              gradient: "from-primary to-primary-glow",
+              change: "+12%"
+            },
+            {
+              title: "Clientes Ativos",
+              value: stats.clientes,
+              icon: Users,
+              gradient: "from-accent to-orange-500",
+              change: "+5%"
+            },
+            {
+              title: "Este Mês",
+              value: profile.agendamentos_mes,
+              icon: TrendingUp,
+              gradient: "from-purple-500 to-pink-500",
+              change: `${Math.round(usagePercentage)}%`
+            },
+            {
+              title: "Taxa de Presença",
+              value: "94%",
+              icon: CheckCircle2,
+              gradient: "from-green-500 to-emerald-500",
+              change: "+3%"
+            }
+          ].map((stat, i) => (
+            <Card key={i} className="border-2 border-border hover:border-primary/50 transition-all hover:shadow-xl group">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                  <stat.icon className="h-6 w-6 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-3xl font-bold">{stat.value}</div>
+                <div className="text-xs text-accent font-medium">
+                  ↑ {stat.change} vs mês anterior
                 </div>
               </CardContent>
             </Card>
-          </div>
+          ))}
+        </div>
 
-          {/* Stats Grid */}
-          <div className="grid gap-4 md:grid-cols-4">
-            {[
-              {
-                title: "Total Agendamentos",
-                value: stats.agendamentos,
-                icon: Calendar,
-                color: "primary",
-                change: "+12%",
-                description: "desde o início"
-              },
-              {
-                title: "Clientes Ativos",
-                value: stats.clientes,
-                icon: Users,
-                color: "accent",
-                change: "+5%",
-                description: "total cadastrado"
-              },
-              {
-                title: "Este Mês",
-                value: profile.agendamentos_mes,
-                icon: TrendingUp,
-                color: "primary",
-                change: `${isFreePlan ? Math.round(usagePercentage) : 100}%`,
-                description: "do limite"
-              },
-              {
-                title: "Taxa de Presença",
-                value: "94%",
-                icon: CheckCircle2,
-                color: "accent",
-                change: "+3%",
-                description: "vs mês anterior"
-              }
-            ].map((stat, i) => (
-              <Card 
-                key={i} 
-                className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-xl group"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <div className="space-y-1">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                      {stat.title}
-                    </CardTitle>
-                  </div>
-                  <div className={`h-10 w-10 rounded-xl bg-gradient-${stat.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
-                    <stat.icon className="h-5 w-5 text-white" />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  <div className="text-3xl font-bold">{stat.value}</div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-accent font-medium">↑ {stat.change}</span>
-                    <span className="text-muted-foreground">{stat.description}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Main Content Grid */}
-          <div className="grid gap-6 lg:grid-cols-3">
-            {/* Quick Actions - 2 columns */}
-            <div className="lg:col-span-2 space-y-4">
-              <h2 className="text-xl font-semibold">Ações Rápidas</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <Button 
-                  size="lg" 
-                  className="h-32 text-lg bg-gradient-primary hover:opacity-90 shadow-xl group relative overflow-hidden"
-                  disabled={limitReached}
-                  onClick={() => limitReached ? navigate("/assinatura") : navigate("/novo-agendamento")}
-                >
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative flex flex-col items-center gap-3">
-                    <Plus className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>{limitReached ? "Limite Atingido" : "Novo Agendamento"}</span>
-                  </div>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="h-32 text-lg border-2 hover:border-primary/50 hover:bg-primary/5 transition-all group"
-                  onClick={() => navigate("/clientes")}
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <Users className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>Gerenciar Clientes</span>
-                  </div>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="h-32 text-lg border-2 hover:border-accent/50 hover:bg-accent/5 transition-all group"
-                  onClick={() => navigate("/servicos")}
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <Briefcase className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>Meus Serviços</span>
-                  </div>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="h-32 text-lg border-2 hover:border-accent/50 hover:bg-accent/5 transition-all group"
-                  onClick={() => navigate("/agenda")}
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <Calendar className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>Ver Agenda</span>
-                  </div>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="h-32 text-lg border-2 hover:border-accent/50 hover:bg-accent/5 transition-all group"
-                  onClick={() => navigate("/relatorios")}
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <BarChart3 className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>Relatórios</span>
-                  </div>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="h-32 text-lg border-2 hover:border-primary/50 hover:bg-primary/5 transition-all group"
-                  onClick={() => navigate("/configuracoes")}
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <Clock className="h-8 w-8 group-hover:scale-110 transition-transform" />
-                    <span>Disponibilidade</span>
-                  </div>
-                </Button>
-              </div>
-            </div>
-
-            {/* Recent Activity - 1 column */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Próximos Agendamentos</h2>
-              <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm">
-                <CardContent className="p-4">
-                  {recentAppointments.length > 0 ? (
-                    <div className="space-y-3">
-                      {recentAppointments.slice(0, 5).map((apt, i) => (
-                        <div 
-                          key={i} 
-                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                          onClick={() => navigate("/agenda")}
-                        >
-                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">
-                              {apt.clientes?.nome || 'Cliente'}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {formatDate(apt.data)} • {apt.hora}
-                            </p>
-                          </div>
-                          <div className={`text-xs font-medium ${getStatusColor(apt.status)}`}>
-                            {apt.status}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 space-y-3">
-                      <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
-                        <AlertCircle className="h-8 w-8 text-muted-foreground" />
+        {/* Plano Info & Link Público */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          {/* Plano Status */}
+          {isFreePlan && (
+            <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-primary/10">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-lg">
+                        <Sparkles className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium text-muted-foreground">Nenhum agendamento</p>
-                        <p className="text-sm text-muted-foreground">Crie seu primeiro agendamento</p>
+                        <p className="font-bold text-lg">Plano Free</p>
+                        <p className="text-sm text-muted-foreground">
+                          {profile.agendamentos_mes}/30 agendamentos
+                        </p>
                       </div>
-                      <Button 
-                        size="sm"
-                        onClick={() => navigate("/novo-agendamento")}
-                        className="bg-gradient-primary hover:opacity-90"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Novo Agendamento
-                      </Button>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Tips Card */}
-              <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 backdrop-blur-sm">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-accent" />
-                    <CardTitle className="text-base">Dica do Dia</CardTitle>
+                    <Button 
+                      onClick={() => navigate("/assinatura")}
+                      size="sm"
+                      className="bg-gradient-primary hover:opacity-90"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Upgrade
+                    </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Compartilhe seu link público de agendamento nas redes sociais para que seus clientes possam agendar diretamente!
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Uso mensal</span>
+                      <span>{Math.round(usagePercentage)}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-500 ${
+                          usagePercentage > 80 ? 'bg-gradient-to-r from-destructive to-accent' : 'bg-gradient-accent'
+                        }`}
+                        style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Link Público */}
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-accent/10">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg flex-shrink-0">
+                  <Share2 className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold mb-1">Link de Agendamento</h3>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {window.location.origin}/p/{user.id}
                   </p>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+                <Button 
+                  onClick={copyLinkPublico} 
+                  size="sm"
+                  className="gap-2 bg-gradient-primary hover:opacity-90 shadow-lg"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copiar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Ações Rápidas</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Button 
+              size="lg" 
+              className="h-40 text-lg bg-gradient-primary hover:opacity-90 shadow-xl group relative overflow-hidden"
+              disabled={limitReached}
+              onClick={() => limitReached ? navigate("/assinatura") : navigate("/novo-agendamento")}
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex flex-col items-center gap-4">
+                <Plus className="h-10 w-10 group-hover:scale-110 transition-transform" />
+                <span className="font-bold">{limitReached ? "Limite Atingido" : "Novo Agendamento"}</span>
+              </div>
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="h-40 text-lg border-2 hover:border-primary hover:bg-primary/5 transition-all group"
+              onClick={() => navigate("/clientes")}
+            >
+              <div className="flex flex-col items-center gap-4">
+                <Users className="h-10 w-10 group-hover:scale-110 transition-transform" />
+                <span className="font-bold">Clientes</span>
+              </div>
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="h-40 text-lg border-2 hover:border-accent hover:bg-accent/5 transition-all group"
+              onClick={() => navigate("/agenda")}
+            >
+              <div className="flex flex-col items-center gap-4">
+                <Calendar className="h-10 w-10 group-hover:scale-110 transition-transform" />
+                <span className="font-bold">Ver Agenda</span>
+              </div>
+            </Button>
           </div>
         </div>
+
+        {/* Recent Appointments */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Próximos Agendamentos</h2>
+          <Card className="border-2 border-border">
+            <CardContent className="p-6">
+              {recentAppointments.length > 0 ? (
+                <div className="space-y-3">
+                  {recentAppointments.map((apt, i) => (
+                    <div 
+                      key={i} 
+                      className="flex items-center gap-4 p-4 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer border border-border"
+                      onClick={() => navigate("/agenda")}
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold">{apt.clientes?.nome || 'Cliente'}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(apt.data)} • {apt.hora}
+                        </p>
+                      </div>
+                      <div className={`text-sm font-bold px-3 py-1 rounded-full ${getStatusColor(apt.status)}`}>
+                        {apt.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 space-y-4">
+                  <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mx-auto">
+                    <AlertCircle className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg">Nenhum agendamento</p>
+                    <p className="text-muted-foreground">Crie seu primeiro agendamento</p>
+                  </div>
+                  <Button 
+                    onClick={() => navigate("/novo-agendamento")}
+                    className="bg-gradient-primary hover:opacity-90"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Agendamento
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tip Card */}
+        <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-primary/10">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-6 w-6 text-accent" />
+              <CardTitle className="text-xl">Dica do Dia</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Compartilhe seu link público de agendamento nas redes sociais para que seus clientes possam agendar diretamente! 🚀
+            </p>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
