@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, BarChart3, Settings, Plus, Share2, Sparkles, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Calendar, Users, BarChart3, Settings, Plus, Share2, Sparkles, TrendingUp, Clock, CheckCircle2, AlertCircle, Briefcase } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
@@ -283,7 +283,7 @@ export default function Dashboard() {
             {/* Quick Actions - 2 columns */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-xl font-semibold">Ações Rápidas</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <Button 
                   size="lg" 
                   className="h-32 text-lg bg-gradient-primary hover:opacity-90 shadow-xl group relative overflow-hidden"
@@ -313,6 +313,18 @@ export default function Dashboard() {
                   variant="outline" 
                   size="lg" 
                   className="h-32 text-lg border-2 hover:border-accent/50 hover:bg-accent/5 transition-all group"
+                  onClick={() => navigate("/servicos")}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <Briefcase className="h-8 w-8 group-hover:scale-110 transition-transform" />
+                    <span>Meus Serviços</span>
+                  </div>
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="h-32 text-lg border-2 hover:border-accent/50 hover:bg-accent/5 transition-all group"
                   onClick={() => navigate("/agenda")}
                 >
                   <div className="flex flex-col items-center gap-3">
@@ -330,6 +342,18 @@ export default function Dashboard() {
                   <div className="flex flex-col items-center gap-3">
                     <BarChart3 className="h-8 w-8 group-hover:scale-110 transition-transform" />
                     <span>Relatórios</span>
+                  </div>
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="h-32 text-lg border-2 hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                  onClick={() => navigate("/configuracoes")}
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <Clock className="h-8 w-8 group-hover:scale-110 transition-transform" />
+                    <span>Disponibilidade</span>
                   </div>
                 </Button>
               </div>

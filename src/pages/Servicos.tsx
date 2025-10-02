@@ -2,24 +2,36 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, Clock, DollarSign } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Plus, Trash2, Edit2, DollarSign, Clock } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Servicos() {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
   const [servicos, setServicos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingServico, setEditingServico] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
     nome: "",
     descricao: "",
-    duracao: "60",
+    duracao: 60,
     valor: ""
   });
 
@@ -33,212 +45,147 @@ export default function Servicos() {
       navigate("/auth");
       return;
     }
-    loadServicos();
+    setUser(user);
+    loadServicos(user.id);
   };
 
-  const loadServicos = async () => {
-    setLoading(true);
+  const loadServicos = async (userId: string) => {
     const { data, error } = await supabase
       .from("servicos")
       .select("*")
+      .eq("user_id", userId)
       .eq("ativo", true)
-      .order("nome");
+      .order("created_at", { ascending: false });
 
     if (error) {
       toast.error("Erro ao carregar serviços");
-      console.error(error);
-    } else {
-      setServicos(data || []);
-    }
-    setLoading(false);
-  };
-
-  const openDialog = (servico?: any) => {
-    if (servico) {
-      setEditingServico(servico);
-      setFormData({
-        nome: servico.nome,
-        descricao: servico.descricao || "",
-        duracao: servico.duracao.toString(),
-        valor: servico.valor || ""
-      });
-    } else {
-      setEditingServico(null);
-      setFormData({
-        nome: "",
-        descricao: "",
-        duracao: "60",
-        valor: ""
-      });
-    }
-    setDialogOpen(true);
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.nome) {
-      toast.error("Nome do serviço é obrigatório");
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    setServicos(data || []);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
     const servicoData = {
-      nome: formData.nome,
-      descricao: formData.descricao || null,
-      duracao: parseInt(formData.duracao),
-      valor: formData.valor ? parseFloat(formData.valor) : null,
-      user_id: user.id
+      ...formData,
+      user_id: user.id,
+      valor: formData.valor ? parseFloat(formData.valor) : null
     };
 
-    let error;
-    if (editingServico) {
-      ({ error } = await supabase
-        .from("servicos")
-        .update(servicoData)
-        .eq("id", editingServico.id));
-    } else {
-      ({ error } = await supabase
-        .from("servicos")
-        .insert([servicoData]));
-    }
+    try {
+      if (editingId) {
+        const { error } = await supabase
+          .from("servicos")
+          .update(servicoData)
+          .eq("id", editingId);
 
-    if (error) {
-      toast.error("Erro ao salvar serviço");
-      console.error(error);
-    } else {
-      toast.success(editingServico ? "Serviço atualizado!" : "Serviço criado!");
-      setDialogOpen(false);
-      loadServicos();
+        if (error) throw error;
+        toast.success("Serviço atualizado com sucesso!");
+      } else {
+        const { error } = await supabase
+          .from("servicos")
+          .insert(servicoData);
+
+        if (error) throw error;
+        toast.success("Serviço criado com sucesso!");
+      }
+
+      resetForm();
+      loadServicos(user.id);
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao salvar serviço");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Deseja realmente excluir este serviço?")) return;
+  const handleEdit = (servico: any) => {
+    setFormData({
+      nome: servico.nome,
+      descricao: servico.descricao || "",
+      duracao: servico.duracao,
+      valor: servico.valor ? servico.valor.toString() : ""
+    });
+    setEditingId(servico.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
     const { error } = await supabase
       .from("servicos")
-      .update({ ativo: false })
-      .eq("id", id);
+      .delete()
+      .eq("id", deleteId);
 
     if (error) {
-      toast.error("Erro ao excluir serviço");
-      console.error(error);
-    } else {
-      toast.success("Serviço excluído!");
-      loadServicos();
+      toast.error("Erro ao deletar serviço");
+      return;
     }
+
+    toast.success("Serviço deletado com sucesso!");
+    setDeleteId(null);
+    loadServicos(user.id);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      nome: "",
+      descricao: "",
+      duracao: 60,
+      valor: ""
+    });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="fixed inset-0">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
-      </div>
-
-      <div className="relative z-10 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Serviços</h1>
-              <p className="text-muted-foreground">Gerencie os serviços oferecidos</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate("/dashboard")}>
-                Voltar
-              </Button>
-              <Button onClick={() => openDialog()} className="gap-2 bg-gradient-primary hover:opacity-90">
-                <Plus className="h-4 w-4" />
-                Novo Serviço
-              </Button>
-            </div>
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Serviços</h1>
+            <p className="text-muted-foreground">Gerencie os serviços que você oferece</p>
           </div>
+          <Button onClick={() => navigate("/dashboard")} variant="outline">
+            Voltar
+          </Button>
+        </div>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            </div>
-          ) : servicos.length === 0 ? (
-            <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardContent className="text-center py-12">
-                <p className="text-muted-foreground mb-4">Nenhum serviço cadastrado</p>
-                <Button onClick={() => openDialog()} className="bg-gradient-primary hover:opacity-90">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Criar Primeiro Serviço
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {servicos.map((servico) => (
-                <Card key={servico.id} className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-xl group">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{servico.nome}</CardTitle>
-                        {servico.descricao && (
-                          <CardDescription className="mt-2">{servico.descricao}</CardDescription>
-                        )}
-                      </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => openDialog(servico)}
-                          className="h-8 w-8"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleDelete(servico.id)}
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{servico.duracao} minutos</span>
-                      </div>
-                      {servico.valor && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <DollarSign className="h-4 w-4 text-accent" />
-                          <span className="font-semibold text-accent">
-                            R$ {parseFloat(servico.valor).toFixed(2)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingServico ? "Editar Serviço" : "Novo Serviço"}</DialogTitle>
-                <DialogDescription>
-                  {editingServico ? "Atualize as informações do serviço" : "Adicione um novo serviço ao seu catálogo"}
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 py-4">
+        {/* Add/Edit Form */}
+        {!showForm ? (
+          <Card className="border-2 border-dashed hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() => setShowForm(true)}>
+            <CardContent className="p-12 text-center">
+              <Plus className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Adicionar Novo Serviço</h3>
+              <p className="text-sm text-muted-foreground">
+                Clique para criar um novo serviço
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-2 border-primary/30 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle>{editingId ? "Editar Serviço" : "Novo Serviço"}</CardTitle>
+              <CardDescription>
+                Preencha as informações do serviço
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nome">Nome *</Label>
+                  <Label htmlFor="nome">Nome do Serviço *</Label>
                   <Input
                     id="nome"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                     placeholder="Ex: Corte de Cabelo"
+                    required
                   />
                 </div>
 
@@ -248,22 +195,22 @@ export default function Servicos() {
                     id="descricao"
                     value={formData.descricao}
                     onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                    placeholder="Detalhes sobre o serviço"
+                    placeholder="Descreva o serviço..."
                     rows={3}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="duracao">Duração (min) *</Label>
+                    <Label htmlFor="duracao">Duração (minutos) *</Label>
                     <Input
                       id="duracao"
                       type="number"
                       value={formData.duracao}
-                      onChange={(e) => setFormData({ ...formData, duracao: e.target.value })}
-                      placeholder="60"
-                      min="15"
-                      step="15"
+                      onChange={(e) => setFormData({ ...formData, duracao: parseInt(e.target.value) })}
+                      min="5"
+                      step="5"
+                      required
                     />
                   </div>
 
@@ -280,19 +227,86 @@ export default function Servicos() {
                     />
                   </div>
                 </div>
-              </div>
 
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleSubmit} className="bg-gradient-primary hover:opacity-90">
-                  {editingServico ? "Atualizar" : "Criar"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <div className="flex gap-2 justify-end">
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={loading} className="bg-gradient-primary">
+                    {loading ? "Salvando..." : editingId ? "Atualizar" : "Criar Serviço"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Services List */}
+        {servicos.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Seus Serviços</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {servicos.map((servico) => (
+                <Card key={servico.id} className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{servico.nome}</span>
+                      <div className="flex gap-2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleEdit(servico)}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setDeleteId(servico.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </CardTitle>
+                    {servico.descricao && (
+                      <CardDescription>{servico.descricao}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span>{servico.duracao} minutos</span>
+                    </div>
+                    {servico.valor && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <span>R$ {parseFloat(servico.valor).toFixed(2)}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation */}
+        <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja deletar este serviço? Esta ação não pode ser desfeita.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive">
+                Deletar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
