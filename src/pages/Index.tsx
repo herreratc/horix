@@ -11,9 +11,9 @@ const Index = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-background">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-primary-glow/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "3s" }} />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/30 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-primary-glow/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "3s" }} />
       </div>
 
       <div className="relative z-10">
@@ -25,22 +25,25 @@ const Index = () => {
               <span className="text-sm font-medium">Novo: Agendamento Público</span>
             </div>
             
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-10">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-60 animate-pulse group-hover:opacity-80 transition-opacity" />
-                <div className="relative bg-card/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-primary/30 shadow-2xl transform group-hover:scale-105 transition-transform float-animation">
+                <div className="absolute inset-0 bg-gradient-primary rounded-[3rem] blur-[60px] opacity-90 animate-pulse group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-accent rounded-[3rem] blur-[40px] opacity-70 animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="relative bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-xl p-10 rounded-[3rem] border-4 border-primary shadow-[0_0_120px_rgba(255,107,0,0.7),0_0_60px_rgba(255,20,147,0.5)] transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 float-animation">
+                  <div className="absolute inset-0 bg-gradient-primary opacity-15 rounded-[3rem] animate-pulse" />
+                  <div className="absolute inset-0 bg-gradient-accent opacity-10 rounded-[3rem] animate-pulse" style={{ animationDelay: '0.5s' }} />
                   <img 
                     src={logo} 
                     alt="Horix" 
-                    className="h-28 w-auto drop-shadow-2xl"
+                    className="relative h-40 w-auto drop-shadow-[0_0_50px_rgba(255,107,0,1)]"
                   />
                 </div>
               </div>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight drop-shadow-[0_0_30px_rgba(255,107,0,0.5)]">
               Sistema de Agendamentos{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
+              <span className="bg-gradient-primary bg-clip-text text-transparent animate-pulse inline-block drop-shadow-[0_0_40px_rgba(255,107,0,0.8)]">
                 Inteligente
               </span>
             </h1>

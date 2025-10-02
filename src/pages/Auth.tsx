@@ -90,20 +90,22 @@ export default function Auth() {
       <div className="relative w-full max-w-md animate-fade-in-up">
         <Card className="border-2 border-border/50 backdrop-blur-xl bg-card/50 shadow-2xl">
           <CardHeader className="text-center space-y-4 pb-8">
-            <div className="flex justify-center mb-2">
+            <div className="flex justify-center mb-4">
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-60 animate-pulse group-hover:opacity-80 transition-opacity" />
-                <div className="relative bg-card/80 backdrop-blur-sm p-6 rounded-3xl border-2 border-primary/30 shadow-2xl transform group-hover:scale-105 transition-transform">
+                <div className="absolute inset-0 bg-gradient-primary rounded-[2rem] blur-3xl opacity-80 animate-pulse group-hover:opacity-100 transition-opacity" style={{ filter: 'blur(40px)' }} />
+                <div className="absolute inset-0 bg-gradient-accent rounded-[2rem] blur-2xl opacity-60 animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="relative bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl p-8 rounded-[2rem] border-4 border-primary shadow-[0_0_80px_rgba(255,107,0,0.5)] transform group-hover:scale-110 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-primary opacity-10 rounded-[2rem]" />
                   <img 
                     src={logo} 
                     alt="Horix" 
-                    className="h-24 w-auto drop-shadow-2xl"
+                    className="relative h-36 w-auto drop-shadow-[0_0_30px_rgba(255,107,0,0.8)] animate-pulse"
                   />
                 </div>
               </div>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Horix
+            <h1 className="text-4xl font-black bg-gradient-primary bg-clip-text text-transparent animate-pulse mb-2 drop-shadow-[0_0_20px_rgba(255,107,0,0.5)]">
+              HORIX
             </h1>
             <div className="space-y-2">
               <CardDescription className="text-base">
