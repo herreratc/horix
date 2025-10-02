@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
+  
   const [profissao, setProfissao] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [horarioInicio, setHorarioInicio] = useState("09:00");
@@ -33,12 +37,23 @@ export default function Onboarding() {
       .single();
 
     if (profile && profile.profissao !== "Profissional") {
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNext = () => {
+    if (step === 1 && !profissao.trim()) {
+      toast.error("Por favor, informe sua profissão");
+      return;
+    }
+    if (step < 3) setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleComplete = async () => {
     setLoading(true);
 
     try {
@@ -49,7 +64,7 @@ export default function Onboarding() {
         .from("profiles")
         .update({
           profissao,
-          whatsapp,
+          whatsapp: whatsapp || null,
           horario_inicio: horarioInicio,
           horario_fim: horarioFim
         })
@@ -57,8 +72,8 @@ export default function Onboarding() {
 
       if (error) throw error;
 
-      toast.success("Perfil configurado!");
-      navigate("/");
+      toast.success("Perfil configurado com sucesso! 🎉");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar perfil");
     } finally {
@@ -66,63 +81,172 @@ export default function Onboarding() {
     }
   };
 
+  const progress = (step / 3) * 100;
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-accent/10">
+      <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Configure seu Perfil</CardTitle>
-          <CardDescription>Vamos personalizar sua agenda</CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="text-2xl">Bem-vindo! 🎉</CardTitle>
+            <CardDescription>
+              Vamos configurar seu perfil em 3 passos simples
+            </CardDescription>
+            <Progress value={progress} className="h-2" />
+          </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="profissao">Profissão *</Label>
-              <Input
-                id="profissao"
-                placeholder="Ex: Psicólogo, Advogado, Personal..."
-                value={profissao}
-                onChange={(e) => setProfissao(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp">WhatsApp (opcional)</Label>
-              <Input
-                id="whatsapp"
-                placeholder="(11) 99999-9999"
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+          {/* Step 1: Profissão */}
+          {step === 1 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <span className="text-2xl">👤</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Qual é sua profissão?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Isso nos ajuda a personalizar sua experiência
+                </p>
+              </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="inicio">Horário Início</Label>
+                <Label htmlFor="profissao">Profissão *</Label>
                 <Input
-                  id="inicio"
-                  type="time"
-                  value={horarioInicio}
-                  onChange={(e) => setHorarioInicio(e.target.value)}
-                  required
+                  id="profissao"
+                  placeholder="Ex: Psicólogo, Advogado, Personal Trainer..."
+                  value={profissao}
+                  onChange={(e) => setProfissao(e.target.value)}
+                  autoFocus
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="fim">Horário Fim</Label>
-                <Input
-                  id="fim"
-                  type="time"
-                  value={horarioFim}
-                  onChange={(e) => setHorarioFim(e.target.value)}
-                  required
-                />
+
+              <Button 
+                onClick={handleNext} 
+                className="w-full gap-2"
+                size="lg"
+              >
+                Próximo
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2: Horários */}
+          {step === 2 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <span className="text-2xl">🕐</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Quais seus horários de atendimento?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Defina seu horário padrão de trabalho
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="inicio">Horário de Início</Label>
+                  <Input
+                    id="inicio"
+                    type="time"
+                    value={horarioInicio}
+                    onChange={(e) => setHorarioInicio(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fim">Horário de Término</Label>
+                  <Input
+                    id="fim"
+                    type="time"
+                    value={horarioFim}
+                    onChange={(e) => setHorarioFim(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleBack} 
+                  variant="outline"
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+                <Button 
+                  onClick={handleNext} 
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  Próximo
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </div>
+          )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Salvando..." : "Continuar"}
-            </Button>
-          </form>
+          {/* Step 3: WhatsApp */}
+          {step === 3 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <span className="text-2xl">📱</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Qual seu WhatsApp?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Para enviar lembretes aos seus clientes (opcional)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">WhatsApp (opcional)</Label>
+                <Input
+                  id="whatsapp"
+                  placeholder="(11) 99999-9999"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Você poderá adicionar depois nas configurações
+                </p>
+              </div>
+
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                <div className="flex gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-sm">Tudo pronto!</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Você está a um clique de começar a usar sua agenda inteligente
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleBack} 
+                  variant="outline"
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+                <Button 
+                  onClick={handleComplete} 
+                  disabled={loading}
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  {loading ? "Configurando..." : "Começar a Usar"}
+                  <CheckCircle className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

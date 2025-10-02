@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, BarChart3, LogOut, Plus } from "lucide-react";
+import { Calendar, Users, BarChart3, LogOut, Plus, Copy, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -59,6 +60,12 @@ export default function Dashboard() {
     navigate("/auth");
   };
 
+  const copyLinkPublico = () => {
+    const link = `${window.location.origin}/p/${user.id}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link copiado! Compartilhe com seus clientes 🎉");
+  };
+
   if (!user || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -102,6 +109,34 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Link Público */}
+        <Card className="border-primary/50 bg-gradient-to-br from-primary/5 to-accent/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Share2 className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div>
+                  <h3 className="font-semibold">Link Público de Agendamento</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Compartilhe este link para seus clientes agendarem diretamente
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-xs bg-background px-3 py-2 rounded border">
+                    {window.location.origin}/p/{user.id}
+                  </code>
+                  <Button onClick={copyLinkPublico} size="sm" className="gap-2">
+                    <Copy className="h-4 w-4" />
+                    Copiar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-3">

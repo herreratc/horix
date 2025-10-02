@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } 
 import { toast } from "sonner";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isSameMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import LembreteButton from "@/components/LembreteButton";
 
 interface Agendamento {
   id: string;
@@ -15,6 +16,10 @@ interface Agendamento {
   servico?: string;
   status: string;
   cliente_id: string;
+  clientes?: {
+    nome: string;
+    whatsapp?: string;
+  };
 }
 
 interface Cliente {
@@ -45,10 +50,16 @@ export default function Agenda() {
   const loadData = async () => {
     setLoading(true);
     
-    // Load agendamentos
+    // Load agendamentos with cliente data
     const { data: agendData, error: agendError } = await supabase
       .from("agendamentos")
-      .select("*")
+      .select(`
+        *,
+        clientes (
+          nome,
+          whatsapp
+        )
+      `)
       .order("data")
       .order("hora");
 
@@ -229,9 +240,9 @@ export default function Agenda() {
                 {selectedDateAgendamentos.map(agend => (
                   <div
                     key={agend.id}
-                    className="p-3 border rounded-lg hover:border-primary/50 transition-colors"
+                    className="p-3 border rounded-lg hover:border-primary/50 transition-colors space-y-2"
                   >
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between">
                       <span className="font-medium">{agend.hora}</span>
                       <span
                         className={`text-xs px-2 py-1 rounded ${
@@ -247,7 +258,16 @@ export default function Agenda() {
                     </div>
                     <p className="text-sm font-medium">{getClienteName(agend.cliente_id)}</p>
                     {agend.servico && (
-                      <p className="text-xs text-muted-foreground mt-1">{agend.servico}</p>
+                      <p className="text-xs text-muted-foreground">{agend.servico}</p>
+                    )}
+                    {agend.status !== "cancelado" && agend.clientes && (
+                      <LembreteButton
+                        clienteNome={agend.clientes.nome}
+                        clienteWhatsapp={agend.clientes.whatsapp}
+                        data={agend.data}
+                        hora={agend.hora}
+                        servico={agend.servico}
+                      />
                     )}
                   </div>
                 ))}

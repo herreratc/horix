@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import PaywallModal from "@/components/PaywallModal";
 
 interface Cliente {
   id: string;
@@ -20,6 +20,7 @@ export default function NovoAgendamento() {
   const [loading, setLoading] = useState(false);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [profile, setProfile] = useState<any>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const [clienteId, setClienteId] = useState("");
   const [data, setData] = useState("");
@@ -50,10 +51,9 @@ export default function NovoAgendamento() {
 
     setProfile(profileData);
 
-    // Check if user has reached limit
+    // Check if user has reached limit - show paywall instead of redirect
     if (profileData?.plano === "free" && profileData.agendamentos_mes >= 30) {
-      toast.error("Limite de agendamentos atingido. Faça upgrade para continuar.");
-      navigate("/assinatura");
+      setShowPaywall(true);
     }
   };
 
@@ -72,6 +72,13 @@ export default function NovoAgendamento() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check limit again before submitting
+    if (profile?.plano === "free" && profile.agendamentos_mes >= 30) {
+      setShowPaywall(true);
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -114,161 +121,170 @@ export default function NovoAgendamento() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/agenda")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Novo Agendamento</h1>
-            <p className="text-muted-foreground">Agende um novo horário</p>
-          </div>
-        </div>
+    <>
+      <PaywallModal
+        open={showPaywall}
+        onOpenChange={setShowPaywall}
+        agendamentosUsados={profile?.agendamentos_mes || 0}
+        limite={30}
+      />
 
-        {profile?.plano === "free" && (
-          <Card className="border-accent">
-            <CardContent className="pt-6">
-              <p className="text-sm">
-                <strong>Plano Free:</strong> {profile.agendamentos_mes}/30 agendamentos este mês
-              </p>
+      <div className="min-h-screen p-4 md:p-8">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/agenda")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Novo Agendamento</h1>
+              <p className="text-muted-foreground">Agende um novo horário</p>
+            </div>
+          </div>
+
+          {profile?.plano === "free" && (
+            <Card className="border-accent">
+              <CardContent className="pt-6">
+                <p className="text-sm">
+                  <strong>Plano Free:</strong> {profile.agendamentos_mes}/30 agendamentos este mês
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Dados do Agendamento</CardTitle>
+              <CardDescription>Preencha as informações do agendamento</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cliente">Cliente *</Label>
+                  <Select value={clienteId} onValueChange={setClienteId} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientes.map(cliente => (
+                        <SelectItem key={cliente.id} value={cliente.id}>
+                          {cliente.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {clientes.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum cliente cadastrado.{" "}
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="p-0 h-auto"
+                        onClick={() => navigate("/clientes/novo")}
+                      >
+                        Cadastrar cliente
+                      </Button>
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="data">Data *</Label>
+                    <Input
+                      id="data"
+                      type="date"
+                      value={data}
+                      onChange={(e) => setData(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="hora">Hora *</Label>
+                    <Input
+                      id="hora"
+                      type="time"
+                      value={hora}
+                      onChange={(e) => setHora(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="duracao">Duração (minutos) *</Label>
+                  <Select value={duracao} onValueChange={setDuracao}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="30">30 minutos</SelectItem>
+                      <SelectItem value="60">60 minutos</SelectItem>
+                      <SelectItem value="90">90 minutos</SelectItem>
+                      <SelectItem value="120">120 minutos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="servico">Serviço</Label>
+                  <Input
+                    id="servico"
+                    placeholder="Ex: Consulta, Sessão, Atendimento..."
+                    value={servico}
+                    onChange={(e) => setServico(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="valor">Valor (R$)</Label>
+                  <Input
+                    id="valor"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={valor}
+                    onChange={(e) => setValor(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lembrete">Canal de Lembrete</Label>
+                  <Select value={canalLembrete} onValueChange={setCanalLembrete}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="whatsapp">WhatsApp (Premium)</SelectItem>
+                      <SelectItem value="ambos">Ambos (Premium)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {profile?.plano === "free" && canalLembrete !== "email" && (
+                    <p className="text-sm text-muted-foreground">
+                      Lembretes por WhatsApp disponíveis apenas no plano Premium
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate("/agenda")}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={loading || clientes.length === 0} className="flex-1">
+                    {loading ? "Criando..." : "Criar Agendamento"}
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
-        )}
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados do Agendamento</CardTitle>
-            <CardDescription>Preencha as informações do agendamento</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="cliente">Cliente *</Label>
-                <Select value={clienteId} onValueChange={setClienteId} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientes.map(cliente => (
-                      <SelectItem key={cliente.id} value={cliente.id}>
-                        {cliente.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {clientes.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Nenhum cliente cadastrado.{" "}
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="p-0 h-auto"
-                      onClick={() => navigate("/clientes/novo")}
-                    >
-                      Cadastrar cliente
-                    </Button>
-                  </p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="data">Data *</Label>
-                  <Input
-                    id="data"
-                    type="date"
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="hora">Hora *</Label>
-                  <Input
-                    id="hora"
-                    type="time"
-                    value={hora}
-                    onChange={(e) => setHora(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="duracao">Duração (minutos) *</Label>
-                <Select value={duracao} onValueChange={setDuracao}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30">30 minutos</SelectItem>
-                    <SelectItem value="60">60 minutos</SelectItem>
-                    <SelectItem value="90">90 minutos</SelectItem>
-                    <SelectItem value="120">120 minutos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="servico">Serviço</Label>
-                <Input
-                  id="servico"
-                  placeholder="Ex: Consulta, Sessão, Atendimento..."
-                  value={servico}
-                  onChange={(e) => setServico(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="valor">Valor (R$)</Label>
-                <Input
-                  id="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={valor}
-                  onChange={(e) => setValor(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lembrete">Canal de Lembrete</Label>
-                <Select value={canalLembrete} onValueChange={setCanalLembrete}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="whatsapp">WhatsApp (Premium)</SelectItem>
-                    <SelectItem value="ambos">Ambos (Premium)</SelectItem>
-                  </SelectContent>
-                </Select>
-                {profile?.plano === "free" && canalLembrete !== "email" && (
-                  <p className="text-sm text-muted-foreground">
-                    Lembretes por WhatsApp disponíveis apenas no plano Premium
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/agenda")}
-                  className="flex-1"
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={loading || clientes.length === 0} className="flex-1">
-                  {loading ? "Criando..." : "Criar Agendamento"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
