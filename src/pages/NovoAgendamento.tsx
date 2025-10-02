@@ -78,6 +78,29 @@ export default function NovoAgendamento() {
       setShowPaywall(true);
       return;
     }
+
+    // Validar data (não pode ser no passado)
+    const dataAgendamento = new Date(data + 'T00:00:00');
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    if (dataAgendamento < hoje) {
+      toast.error("A data do agendamento não pode ser no passado!");
+      return;
+    }
+
+    // Se for hoje, validar hora
+    const agora = new Date();
+    if (dataAgendamento.toDateString() === agora.toDateString()) {
+      const [h, m] = hora.split(':').map(Number);
+      const horaAgendamento = new Date();
+      horaAgendamento.setHours(h, m, 0, 0);
+      
+      if (horaAgendamento <= agora) {
+        toast.error("O horário do agendamento já passou!");
+        return;
+      }
+    }
     
     setLoading(true);
 
@@ -261,6 +284,7 @@ Qualquer dúvida, estou à disposição! 😊`;
                       type="date"
                       value={data}
                       onChange={(e) => setData(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
                       required
                     />
                   </div>

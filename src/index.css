@@ -111,10 +111,16 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight;
+    font-weight: 700;
+  }
+
+  input, select, textarea {
+    @apply text-foreground;
   }
 }
 

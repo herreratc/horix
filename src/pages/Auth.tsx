@@ -97,7 +97,7 @@ export default function Auth() {
                 className="h-48 w-auto drop-shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer"
               />
             </div>
-            <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent mb-2">
+            <h1 className="text-5xl font-black text-primary mb-2">
               HORIX
             </h1>
             <div className="space-y-2">

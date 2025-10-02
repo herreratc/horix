@@ -115,10 +115,10 @@ export default function Dashboard() {
       <div className="p-4 md:p-8 space-y-8">
         {/* Welcome Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold">
-            Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.nome || profile.profissao}</span> 👋
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            Olá, <span className="text-primary font-black">{profile.nome || profile.profissao}</span> 👋
           </h1>
-          <p className="text-muted-foreground">Aqui está um resumo do seu dia</p>
+          <p className="text-muted-foreground text-lg">Aqui está um resumo do seu dia</p>
         </div>
 
         {/* Stats Grid */}
