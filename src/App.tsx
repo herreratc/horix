@@ -14,6 +14,7 @@ import Agenda from "./pages/Agenda";
 import NovoAgendamento from "./pages/NovoAgendamento";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
+import Servicos from "./pages/Servicos";
 import AgendamentoPublico from "./pages/AgendamentoPublico";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/novo-agendamento" element={<NovoAgendamento />} />
           <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
+          <Route path="/servicos" element={<Servicos />} />
           <Route path="/p/:userId" element={<AgendamentoPublico />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

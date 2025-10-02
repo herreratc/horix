@@ -118,6 +118,39 @@ export type Database = {
           },
         ]
       }
+      disponibilidade: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          dia_semana: number
+          horario_fim: string
+          horario_inicio: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          dia_semana: number
+          horario_fim: string
+          horario_inicio: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          dia_semana?: number
+          horario_fim?: string
+          horario_inicio?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       log_notificacoes: {
         Row: {
           agendamento_id: string
@@ -192,6 +225,42 @@ export type Database = {
           profissao?: string
           updated_at?: string
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      servicos: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string | null
+          duracao: number
+          id: string
+          nome: string
+          updated_at: string
+          user_id: string
+          valor: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          duracao?: number
+          id?: string
+          nome: string
+          updated_at?: string
+          user_id: string
+          valor?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string | null
+          duracao?: number
+          id?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number | null
         }
         Relationships: []
       }
