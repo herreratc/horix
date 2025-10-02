@@ -1,17 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, ArrowLeft, CheckCircle2, QrCode, Sparkles } from "lucide-react";
+import { Copy, ArrowLeft, CheckCircle2, QrCode, Sparkles, Building } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Assinatura() {
   const navigate = useNavigate();
-  const pixKey = "agendainteligente@pix.com";
+  const pixKey = "51.243.904/0001-89";
+  const pixTipo = "CNPJ";
   const monthlyPrice = "R$ 29,00";
 
   const copyPixKey = () => {
     navigator.clipboard.writeText(pixKey);
-    toast.success("Chave Pix copiada!");
+    toast.success("Chave Pix CNPJ copiada!");
   };
 
   return (
@@ -148,7 +149,10 @@ export default function Assinatura() {
             {/* Pix Info */}
             <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl space-y-4 border border-primary/20">
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-3">Chave Pix</p>
+                <div className="flex items-center gap-2 mb-3">
+                  <Building className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium text-muted-foreground">Chave Pix ({pixTipo})</p>
+                </div>
                 <div className="flex items-center gap-3">
                   <code className="flex-1 bg-background px-4 py-3 rounded-lg font-mono text-sm border">
                     {pixKey}

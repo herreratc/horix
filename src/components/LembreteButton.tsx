@@ -27,16 +27,29 @@ export default function LembreteButton({
     const telefone = clienteWhatsapp.replace(/\D/g, "");
     
     // Format date
-    const dataFormatada = new Date(data).toLocaleDateString("pt-BR");
+    const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long'
+    });
     
-    // Create message
-    const mensagem = `Olá ${clienteNome}! 👋\n\nEste é um lembrete do seu agendamento:\n\n📅 Data: ${dataFormatada}\n🕐 Horário: ${hora}${servico ? `\n📋 Serviço: ${servico}` : ""}\n\nNos vemos em breve! Caso precise remarcar, entre em contato.`;
+    // Create message - Professional and friendly
+    const mensagem = `Olá, ${clienteNome}! 👋
+
+📅 *Lembrete de Agendamento*
+
+${servico ? `🔹 Serviço: *${servico}*\n` : ''}🔹 Data: *${dataFormatada}*
+🔹 Horário: *${hora}*
+
+Estou te esperando! Caso precise remarcar ou cancelar, me avise com antecedência.
+
+Até breve! 😊`;
     
     // Open WhatsApp Web
     const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
     
-    toast.success("WhatsApp aberto! Envie a mensagem.");
+    toast.success("WhatsApp aberto! Envie a mensagem 💬");
   };
 
   return (

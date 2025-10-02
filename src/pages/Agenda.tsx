@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isSameMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import LembreteButton from "@/components/LembreteButton";
+import LembretesAutomaticos from "@/components/LembretesAutomaticos";
 
 interface Agendamento {
   id: string;
@@ -112,20 +113,23 @@ export default function Agenda() {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold">Agenda</h1>
-              <p className="text-muted-foreground">Visualize seus agendamentos</p>
+              <p className="text-muted-foreground">Visualize e gerencie seus agendamentos</p>
             </div>
           </div>
-          <Button onClick={() => navigate("/novo-agendamento")} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Novo Agendamento
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <LembretesAutomaticos agendamentos={agendamentos} />
+            <Button onClick={() => navigate("/novo-agendamento")} className="gap-2 bg-gradient-primary">
+              <Plus className="h-4 w-4" />
+              Novo Agendamento
+            </Button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
