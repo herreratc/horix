@@ -177,28 +177,41 @@ Seu agendamento foi confirmado! Te espero no horário marcado.
 
 Qualquer dúvida, estou à disposição! 😊`;
         
-        // Usar wa.me que é a URL oficial do WhatsApp
-        const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+        const mensagemEncoded = encodeURIComponent(mensagem);
+        
+        // Tentar protocolo whatsapp:// primeiro (abre app direto no mobile)
+        const deepLink = `whatsapp://send?phone=55${telefone}&text=${mensagemEncoded}`;
+        // Fallback para wa.me (funciona em desktop e mobile)
+        const webLink = `https://wa.me/55${telefone}?text=${mensagemEncoded}`;
         
         console.log("Abrindo WhatsApp para:", telefone);
-        console.log("URL WhatsApp:", url);
         
-        // Tentar abrir em nova janela
-        const whatsappWindow = window.open(url, "_blank");
+        // Detectar se é mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
-          // Pop-up foi bloqueado
-          toast.error("Pop-up bloqueado! Clique no botão para abrir o WhatsApp", { 
-            duration: 6000,
-            action: {
-              label: "Abrir WhatsApp",
-              onClick: () => window.open(url, "_blank")
-            }
+        if (isMobile) {
+          // No mobile, tenta abrir o app direto
+          window.location.href = deepLink;
+          toast.success("WhatsApp aberto! Envie a confirmação para o cliente 💬", { 
+            duration: 3000 
           });
         } else {
-          toast.success("WhatsApp aberto! Envie a confirmação para o cliente 💬", { 
-            duration: 5000 
-          });
+          // No desktop, abre em nova aba
+          const whatsappWindow = window.open(webLink, "_blank");
+          
+          if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+            toast.error("Pop-up bloqueado! Clique no botão para abrir o WhatsApp", { 
+              duration: 6000,
+              action: {
+                label: "Abrir WhatsApp",
+                onClick: () => window.open(webLink, "_blank")
+              }
+            });
+          } else {
+            toast.success("WhatsApp Web aberto! Envie a confirmação em 1 clique 💬", { 
+              duration: 3000 
+            });
+          }
         }
       } else {
         toast.info("Cliente não tem WhatsApp cadastrado. Adicione nas configurações do cliente.");
