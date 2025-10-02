@@ -1,0 +1,261 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { toast } from "sonner";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isSameMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+interface Agendamento {
+  id: string;
+  data: string;
+  hora: string;
+  servico?: string;
+  status: string;
+  cliente_id: string;
+}
+
+interface Cliente {
+  id: string;
+  nome: string;
+}
+
+export default function Agenda() {
+  const navigate = useNavigate();
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+    loadData();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+    }
+  };
+
+  const loadData = async () => {
+    setLoading(true);
+    
+    // Load agendamentos
+    const { data: agendData, error: agendError } = await supabase
+      .from("agendamentos")
+      .select("*")
+      .order("data")
+      .order("hora");
+
+    if (agendError) {
+      toast.error("Erro ao carregar agendamentos");
+    } else {
+      setAgendamentos(agendData || []);
+    }
+
+    // Load clientes
+    const { data: clientData, error: clientError } = await supabase
+      .from("clientes")
+      .select("id, nome");
+
+    if (clientError) {
+      toast.error("Erro ao carregar clientes");
+    } else {
+      setClientes(clientData || []);
+    }
+
+    setLoading(false);
+  };
+
+  const getClienteName = (clienteId: string) => {
+    const cliente = clientes.find(c => c.id === clienteId);
+    return cliente?.nome || "Cliente não encontrado";
+  };
+
+  const getAgendamentosForDate = (date: Date) => {
+    return agendamentos.filter(a => isSameDay(new Date(a.data), date));
+  };
+
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarStart = startOfWeek(monthStart);
+  const calendarEnd = endOfWeek(monthEnd);
+  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+
+  const selectedDateAgendamentos = selectedDate ? getAgendamentosForDate(selectedDate) : [];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">Carregando...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Agenda</h1>
+              <p className="text-muted-foreground">Visualize seus agendamentos</p>
+            </div>
+          </div>
+          <Button onClick={() => navigate("/novo-agendamento")} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Novo Agendamento
+          </Button>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Calendar */}
+          <Card className="md:col-span-2">
+            <CardContent className="pt-6">
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold capitalize">
+                  {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+                </h2>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentMonth(new Date())}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Weekday headers */}
+              <div className="grid grid-cols-7 gap-2 mb-2">
+                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
+                  <div key={day} className="text-center text-sm font-medium text-muted-foreground p-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              {/* Calendar days */}
+              <div className="grid grid-cols-7 gap-2">
+                {calendarDays.map(day => {
+                  const dayAgendamentos = getAgendamentosForDate(day);
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+                  const isSelected = selectedDate && isSameDay(day, selectedDate);
+                  const isToday = isSameDay(day, new Date());
+
+                  return (
+                    <button
+                      key={day.toISOString()}
+                      onClick={() => setSelectedDate(day)}
+                      className={`
+                        min-h-[80px] p-2 rounded-lg border-2 transition-all text-left
+                        ${isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"}
+                        ${!isCurrentMonth ? "opacity-40" : ""}
+                        ${isToday ? "ring-2 ring-accent" : ""}
+                      `}
+                    >
+                      <div className="font-medium text-sm mb-1">{format(day, "d")}</div>
+                      {dayAgendamentos.length > 0 && (
+                        <div className="space-y-1">
+                          {dayAgendamentos.slice(0, 2).map(agend => (
+                            <div
+                              key={agend.id}
+                              className={`text-xs px-1 py-0.5 rounded truncate ${
+                                agend.status === "confirmado"
+                                  ? "bg-accent/20 text-accent"
+                                  : agend.status === "cancelado"
+                                  ? "bg-destructive/20 text-destructive"
+                                  : "bg-primary/20 text-primary"
+                              }`}
+                            >
+                              {agend.hora}
+                            </div>
+                          ))}
+                          {dayAgendamentos.length > 2 && (
+                            <div className="text-xs text-muted-foreground">
+                              +{dayAgendamentos.length - 2} mais
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Day Details */}
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="font-semibold mb-4">
+                {selectedDate
+                  ? format(selectedDate, "d 'de' MMMM", { locale: ptBR })
+                  : "Selecione um dia"}
+              </h3>
+
+              {selectedDate && selectedDateAgendamentos.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhum agendamento para este dia
+                </p>
+              )}
+
+              <div className="space-y-3">
+                {selectedDateAgendamentos.map(agend => (
+                  <div
+                    key={agend.id}
+                    className="p-3 border rounded-lg hover:border-primary/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{agend.hora}</span>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          agend.status === "confirmado"
+                            ? "bg-accent/20 text-accent"
+                            : agend.status === "cancelado"
+                            ? "bg-destructive/20 text-destructive"
+                            : "bg-primary/20 text-primary"
+                        }`}
+                      >
+                        {agend.status}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium">{getClienteName(agend.cliente_id)}</p>
+                    {agend.servico && (
+                      <p className="text-xs text-muted-foreground mt-1">{agend.servico}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
