@@ -199,6 +199,7 @@ export type Database = {
           horario_fim: string
           horario_inicio: string
           id: string
+          nome: string | null
           plano: string
           profissao: string
           updated_at: string
@@ -210,6 +211,7 @@ export type Database = {
           horario_fim?: string
           horario_inicio?: string
           id: string
+          nome?: string | null
           plano?: string
           profissao: string
           updated_at?: string
@@ -221,6 +223,7 @@ export type Database = {
           horario_fim?: string
           horario_inicio?: string
           id?: string
+          nome?: string | null
           plano?: string
           profissao?: string
           updated_at?: string

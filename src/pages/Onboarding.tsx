@@ -14,6 +14,7 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   
+  const [nome, setNome] = useState("");
   const [profissao, setProfissao] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [horarioInicio, setHorarioInicio] = useState("09:00");
@@ -42,11 +43,15 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
-    if (step === 1 && !profissao.trim()) {
+    if (step === 1 && !nome.trim()) {
+      toast.error("Por favor, informe seu nome ou nome da empresa");
+      return;
+    }
+    if (step === 2 && !profissao.trim()) {
       toast.error("Por favor, informe sua profissão");
       return;
     }
-    if (step < 3) setStep(step + 1);
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -63,6 +68,7 @@ export default function Onboarding() {
       const { error } = await supabase
         .from("profiles")
         .update({
+          nome,
           profissao,
           whatsapp: whatsapp || null,
           horario_inicio: horarioInicio,
@@ -81,7 +87,7 @@ export default function Onboarding() {
     }
   };
 
-  const progress = (step / 3) * 100;
+  const progress = (step / 4) * 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-accent/10">
@@ -90,14 +96,49 @@ export default function Onboarding() {
           <div className="space-y-2">
             <CardTitle className="text-2xl">Bem-vindo! 🎉</CardTitle>
             <CardDescription>
-              Vamos configurar seu perfil em 3 passos simples
+              Vamos configurar seu perfil em 4 passos simples
             </CardDescription>
             <Progress value={progress} className="h-2" />
           </div>
         </CardHeader>
         <CardContent>
-          {/* Step 1: Profissão */}
+          {/* Step 1: Nome */}
           {step === 1 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <span className="text-2xl">✨</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Como devemos te chamar?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Seu nome ou nome da sua empresa
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="nome">Nome *</Label>
+                <Input
+                  id="nome"
+                  placeholder="Ex: João Silva ou Clínica Saúde"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  autoFocus
+                />
+              </div>
+
+              <Button 
+                onClick={handleNext} 
+                className="w-full gap-2"
+                size="lg"
+              >
+                Próximo
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Step 2: Profissão */}
+          {step === 2 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -116,23 +157,33 @@ export default function Onboarding() {
                   placeholder="Ex: Psicólogo, Advogado, Personal Trainer..."
                   value={profissao}
                   onChange={(e) => setProfissao(e.target.value)}
-                  autoFocus
                 />
               </div>
 
-              <Button 
-                onClick={handleNext} 
-                className="w-full gap-2"
-                size="lg"
-              >
-                Próximo
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleBack} 
+                  variant="outline"
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+                <Button 
+                  onClick={handleNext} 
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  Próximo
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
 
-          {/* Step 2: Horários */}
-          {step === 2 && (
+          {/* Step 3: Horários */}
+          {step === 3 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -187,8 +238,8 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* Step 3: WhatsApp */}
-          {step === 3 && (
+          {/* Step 4: WhatsApp */}
+          {step === 4 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
