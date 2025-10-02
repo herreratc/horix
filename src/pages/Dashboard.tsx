@@ -38,6 +38,7 @@ export default function Dashboard() {
       .eq("id", userId)
       .single();
 
+    console.log("Profile carregado:", data);
     setProfile(data);
   };
 
@@ -116,9 +117,14 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <div className="space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Olá, <span className="text-primary font-black">{profile.nome || profile.profissao}</span> 👋
+            Olá, <span className="text-primary font-black">{profile?.nome || profile?.profissao || "Usuário"}</span> 👋
           </h1>
           <p className="text-muted-foreground text-lg">Aqui está um resumo do seu dia</p>
+          {!profile?.nome && (
+            <p className="text-sm text-destructive">
+              ⚠️ Configure seu nome nas <button onClick={() => navigate("/configuracoes")} className="underline font-medium">configurações</button>
+            </p>
+          )}
         </div>
 
         {/* Stats Grid */}

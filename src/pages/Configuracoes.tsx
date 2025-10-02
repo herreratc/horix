@@ -31,6 +31,7 @@ export default function Configuracoes() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   
+  const [nome, setNome] = useState("");
   const [profissao, setProfissao] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [disponibilidades, setDisponibilidades] = useState<Record<number, Disponibilidade>>({
@@ -63,7 +64,8 @@ export default function Configuracoes() {
       .single();
 
     if (profile) {
-      setProfissao(profile.profissao);
+      setNome(profile.nome || "");
+      setProfissao(profile.profissao || "");
       setWhatsapp(profile.whatsapp || "");
     }
 
@@ -96,6 +98,7 @@ export default function Configuracoes() {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
+          nome,
           profissao,
           whatsapp: whatsapp || null,
         })
@@ -192,6 +195,20 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSave} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="nome">Nome / Nome da Empresa *</Label>
+                  <Input
+                    id="nome"
+                    placeholder="Seu nome ou nome da empresa"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Este nome aparecerá no dashboard
+                  </p>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="profissao">Profissão *</Label>
                   <Input
