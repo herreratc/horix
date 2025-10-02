@@ -14,13 +14,196 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agendamentos: {
+        Row: {
+          canal_lembrete: string
+          cliente_id: string
+          created_at: string
+          data: string
+          duracao: number
+          hora: string
+          id: string
+          servico: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          valor: number | null
+        }
+        Insert: {
+          canal_lembrete?: string
+          cliente_id: string
+          created_at?: string
+          data: string
+          duracao?: number
+          hora: string
+          id?: string
+          servico?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          valor?: number | null
+        }
+        Update: {
+          canal_lembrete?: string
+          cliente_id?: string
+          created_at?: string
+          data?: string
+          duracao?: number
+          hora?: string
+          id?: string
+          servico?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agendamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string
+          notas: string | null
+          telefone: string | null
+          updated_at: string
+          user_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome: string
+          notas?: string | null
+          telefone?: string | null
+          updated_at?: string
+          user_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string
+          notas?: string | null
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      log_notificacoes: {
+        Row: {
+          agendamento_id: string
+          canal: string
+          created_at: string
+          enviado_em: string | null
+          erro_mensagem: string | null
+          id: string
+          status: string
+          tipo: string
+        }
+        Insert: {
+          agendamento_id: string
+          canal: string
+          created_at?: string
+          enviado_em?: string | null
+          erro_mensagem?: string | null
+          id?: string
+          status: string
+          tipo: string
+        }
+        Update: {
+          agendamento_id?: string
+          canal?: string
+          created_at?: string
+          enviado_em?: string | null
+          erro_mensagem?: string | null
+          id?: string
+          status?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "log_notificacoes_agendamento_id_fkey"
+            columns: ["agendamento_id"]
+            isOneToOne: false
+            referencedRelation: "agendamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          agendamentos_mes: number
+          created_at: string
+          horario_fim: string
+          horario_inicio: string
+          id: string
+          plano: string
+          profissao: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          agendamentos_mes?: number
+          created_at?: string
+          horario_fim?: string
+          horario_inicio?: string
+          id: string
+          plano?: string
+          profissao: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          agendamentos_mes?: number
+          created_at?: string
+          horario_fim?: string
+          horario_inicio?: string
+          id?: string
+          plano?: string
+          profissao?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reset_monthly_counter: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
