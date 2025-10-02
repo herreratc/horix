@@ -83,8 +83,8 @@ export default function Auth() {
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-background">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 -right-4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 -right-4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
       </div>
 
       <div className="relative w-full max-w-md animate-fade-in-up">
