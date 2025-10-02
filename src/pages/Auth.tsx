@@ -93,13 +93,10 @@ export default function Auth() {
             <div className="flex justify-center mb-4">
               <img 
                 src={logo} 
-                alt="Horix" 
+                alt="Logo" 
                 className="h-48 w-auto drop-shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer"
               />
             </div>
-            <h1 className="text-5xl font-black text-primary mb-2">
-              HORIX
-            </h1>
             <div className="space-y-2">
               <CardDescription className="text-base">
                 Sistema Inteligente de Agendamentos
