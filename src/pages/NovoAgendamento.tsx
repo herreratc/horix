@@ -146,9 +146,14 @@ export default function NovoAgendamento() {
       
       // Abrir WhatsApp automaticamente se cliente tiver WhatsApp
       if (novoAgendamento?.clientes?.whatsapp) {
-        const telefone = novoAgendamento.clientes.whatsapp.replace(/\D/g, "");
+        let telefone = novoAgendamento.clientes.whatsapp.replace(/\D/g, "");
         
-        // Validar se o telefone tem tamanho correto (11 dígitos no Brasil)
+        // Remover o 55 se já existir para evitar duplicação
+        if (telefone.startsWith("55")) {
+          telefone = telefone.substring(2);
+        }
+        
+        // Validar se o telefone tem tamanho correto (10-11 dígitos no Brasil, sem código do país)
         if (telefone.length < 10 || telefone.length > 11) {
           toast.error("Número de WhatsApp inválido. Verifique o cadastro do cliente.");
           navigate("/agenda");
@@ -172,6 +177,7 @@ Seu agendamento foi confirmado! Te espero no horário marcado.
 
 Qualquer dúvida, estou à disposição! 😊`;
         
+        // Usar wa.me que é a URL oficial do WhatsApp
         const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
         
         console.log("Abrindo WhatsApp para:", telefone);
