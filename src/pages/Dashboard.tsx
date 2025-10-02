@@ -122,18 +122,20 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
           {/* Header */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-90 animate-pulse group-hover:opacity-100 transition-opacity" style={{ filter: 'blur(50px)' }} />
-                <div className="absolute inset-0 bg-gradient-accent rounded-3xl blur-2xl opacity-70 animate-pulse" style={{ animationDelay: '1.5s' }} />
-                <div className="relative bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-xl p-6 rounded-3xl border-4 border-primary shadow-[0_0_100px_rgba(255,107,0,0.6)] transform group-hover:scale-110 transition-all duration-300 group-hover:rotate-3">
-                  <div className="absolute inset-0 bg-gradient-primary opacity-10 rounded-3xl" />
-                  <img src={logo} alt="Horix" className="relative h-24 w-auto drop-shadow-[0_0_40px_rgba(255,107,0,0.9)]" />
-                </div>
-              </div>
+            <div className="flex items-center gap-6">
+              <img 
+                src={logo} 
+                alt="Horix" 
+                className="h-32 w-auto hover:scale-110 transition-transform duration-300 cursor-pointer" 
+                style={{ 
+                  filter: 'drop-shadow(0 0 60px rgba(255,107,0,1)) drop-shadow(0 0 30px rgba(255,20,147,0.8)) brightness(1.1)'
+                }}
+              />
               <div className="space-y-1">
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,107,0,0.5)]">{profile.profissao}</span> 👋
+                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent" style={{
+                    textShadow: '0 0 30px rgba(255,107,0,0.6)'
+                  }}>{profile.profissao}</span> 👋
                 </h1>
                 <p className="text-muted-foreground">Aqui está um resumo do seu dia</p>
               </div>

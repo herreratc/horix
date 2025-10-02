@@ -91,20 +91,18 @@ export default function Auth() {
         <Card className="border-2 border-border/50 backdrop-blur-xl bg-card/50 shadow-2xl">
           <CardHeader className="text-center space-y-4 pb-8">
             <div className="flex justify-center mb-4">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-[2rem] blur-3xl opacity-80 animate-pulse group-hover:opacity-100 transition-opacity" style={{ filter: 'blur(40px)' }} />
-                <div className="absolute inset-0 bg-gradient-accent rounded-[2rem] blur-2xl opacity-60 animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="relative bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl p-8 rounded-[2rem] border-4 border-primary shadow-[0_0_80px_rgba(255,107,0,0.5)] transform group-hover:scale-110 transition-all duration-300">
-                  <div className="absolute inset-0 bg-gradient-primary opacity-10 rounded-[2rem]" />
-                  <img 
-                    src={logo} 
-                    alt="Horix" 
-                    className="relative h-36 w-auto drop-shadow-[0_0_30px_rgba(255,107,0,0.8)] animate-pulse"
-                  />
-                </div>
-              </div>
+              <img 
+                src={logo} 
+                alt="Horix" 
+                className="h-48 w-auto drop-shadow-[0_0_80px_rgba(255,107,0,1)] filter brightness-110 hover:scale-110 transition-transform duration-300 cursor-pointer"
+                style={{ 
+                  filter: 'drop-shadow(0 0 80px rgba(255,107,0,1)) drop-shadow(0 0 40px rgba(255,20,147,0.8)) brightness(1.1)'
+                }}
+              />
             </div>
-            <h1 className="text-4xl font-black bg-gradient-primary bg-clip-text text-transparent animate-pulse mb-2 drop-shadow-[0_0_20px_rgba(255,107,0,0.5)]">
+            <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent mb-2" style={{
+              textShadow: '0 0 40px rgba(255,107,0,0.8), 0 0 20px rgba(255,20,147,0.6)'
+            }}>
               HORIX
             </h1>
             <div className="space-y-2">

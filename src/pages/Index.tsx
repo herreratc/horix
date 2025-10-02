@@ -25,25 +25,22 @@ const Index = () => {
               <span className="text-sm font-medium">Novo: Agendamento Público</span>
             </div>
             
-            <div className="flex justify-center mb-10">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-primary rounded-[3rem] blur-[60px] opacity-90 animate-pulse group-hover:opacity-100 transition-opacity" />
-                <div className="absolute inset-0 bg-gradient-accent rounded-[3rem] blur-[40px] opacity-70 animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="relative bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-xl p-10 rounded-[3rem] border-4 border-primary shadow-[0_0_120px_rgba(255,107,0,0.7),0_0_60px_rgba(255,20,147,0.5)] transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 float-animation">
-                  <div className="absolute inset-0 bg-gradient-primary opacity-15 rounded-[3rem] animate-pulse" />
-                  <div className="absolute inset-0 bg-gradient-accent opacity-10 rounded-[3rem] animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  <img 
-                    src={logo} 
-                    alt="Horix" 
-                    className="relative h-40 w-auto drop-shadow-[0_0_50px_rgba(255,107,0,1)]"
-                  />
-                </div>
-              </div>
+            <div className="flex justify-center mb-12 float-animation">
+              <img 
+                src={logo} 
+                alt="Horix" 
+                className="h-56 w-auto hover:scale-110 transition-transform duration-500 cursor-pointer"
+                style={{ 
+                  filter: 'drop-shadow(0 0 100px rgba(255,107,0,1)) drop-shadow(0 0 50px rgba(255,20,147,0.9)) drop-shadow(0 0 80px rgba(255,107,0,0.8)) brightness(1.15)'
+                }}
+              />
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight drop-shadow-[0_0_30px_rgba(255,107,0,0.5)]">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
               Sistema de Agendamentos{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent animate-pulse inline-block drop-shadow-[0_0_40px_rgba(255,107,0,0.8)]">
+              <span className="bg-gradient-primary bg-clip-text text-transparent inline-block" style={{
+                textShadow: '0 0 50px rgba(255,107,0,0.9), 0 0 30px rgba(255,20,147,0.7)'
+              }}>
                 Inteligente
               </span>
             </h1>
