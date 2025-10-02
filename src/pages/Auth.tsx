@@ -94,15 +94,10 @@ export default function Auth() {
               <img 
                 src={logo} 
                 alt="Horix" 
-                className="h-48 w-auto drop-shadow-[0_0_80px_rgba(255,107,0,1)] filter brightness-110 hover:scale-110 transition-transform duration-300 cursor-pointer"
-                style={{ 
-                  filter: 'drop-shadow(0 0 80px rgba(255,107,0,1)) drop-shadow(0 0 40px rgba(255,20,147,0.8)) brightness(1.1)'
-                }}
+                className="h-48 w-auto drop-shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer"
               />
             </div>
-            <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent mb-2" style={{
-              textShadow: '0 0 40px rgba(255,107,0,0.8), 0 0 20px rgba(255,20,147,0.6)'
-            }}>
+            <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent mb-2">
               HORIX
             </h1>
             <div className="space-y-2">

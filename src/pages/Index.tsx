@@ -11,9 +11,9 @@ const Index = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-background">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-primary-glow/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "3s" }} />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-primary-glow/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "3s" }} />
       </div>
 
       <div className="relative z-10">
@@ -29,18 +29,13 @@ const Index = () => {
               <img 
                 src={logo} 
                 alt="Horix" 
-                className="h-56 w-auto hover:scale-110 transition-transform duration-500 cursor-pointer"
-                style={{ 
-                  filter: 'drop-shadow(0 0 100px rgba(255,107,0,1)) drop-shadow(0 0 50px rgba(255,20,147,0.9)) drop-shadow(0 0 80px rgba(255,107,0,0.8)) brightness(1.15)'
-                }}
+                className="h-56 w-auto hover:scale-110 transition-transform duration-500 cursor-pointer drop-shadow-2xl"
               />
             </div>
             
             <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
               Sistema de Agendamentos{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent inline-block" style={{
-                textShadow: '0 0 50px rgba(255,107,0,0.9), 0 0 30px rgba(255,20,147,0.7)'
-              }}>
+              <span className="bg-gradient-primary bg-clip-text text-transparent inline-block">
                 Inteligente
               </span>
             </h1>

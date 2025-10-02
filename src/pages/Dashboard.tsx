@@ -126,16 +126,11 @@ export default function Dashboard() {
               <img 
                 src={logo} 
                 alt="Horix" 
-                className="h-32 w-auto hover:scale-110 transition-transform duration-300 cursor-pointer" 
-                style={{ 
-                  filter: 'drop-shadow(0 0 60px rgba(255,107,0,1)) drop-shadow(0 0 30px rgba(255,20,147,0.8)) brightness(1.1)'
-                }}
+                className="h-32 w-auto hover:scale-110 transition-transform duration-300 cursor-pointer drop-shadow-2xl" 
               />
               <div className="space-y-1">
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent" style={{
-                    textShadow: '0 0 30px rgba(255,107,0,0.6)'
-                  }}>{profile.profissao}</span> 👋
+                  Olá, <span className="bg-gradient-primary bg-clip-text text-transparent">{profile.nome || profile.profissao}</span> 👋
                 </h1>
                 <p className="text-muted-foreground">Aqui está um resumo do seu dia</p>
               </div>
