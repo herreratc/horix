@@ -119,11 +119,19 @@ export default function NovoAgendamento() {
           .eq("id", user.id);
       }
 
-      toast.success("Agendamento criado com sucesso");
+      toast.success("Agendamento criado com sucesso! ✅");
       
       // Abrir WhatsApp automaticamente se cliente tiver WhatsApp
       if (novoAgendamento?.clientes?.whatsapp) {
         const telefone = novoAgendamento.clientes.whatsapp.replace(/\D/g, "");
+        
+        // Validar se o telefone tem tamanho correto (11 dígitos no Brasil)
+        if (telefone.length < 10 || telefone.length > 11) {
+          toast.error("Número de WhatsApp inválido. Verifique o cadastro do cliente.");
+          navigate("/agenda");
+          return;
+        }
+        
         const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
           weekday: 'long',
           day: '2-digit',
@@ -142,12 +150,35 @@ Seu agendamento foi confirmado! Te espero no horário marcado.
 Qualquer dúvida, estou à disposição! 😊`;
         
         const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
-        window.open(url, "_blank");
         
-        toast.success("WhatsApp aberto! Envie a confirmação 💬", { duration: 4000 });
+        console.log("Abrindo WhatsApp para:", telefone);
+        console.log("URL WhatsApp:", url);
+        
+        // Tentar abrir em nova janela
+        const whatsappWindow = window.open(url, "_blank");
+        
+        if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+          // Pop-up foi bloqueado
+          toast.error("Pop-up bloqueado! Clique no botão para abrir o WhatsApp", { 
+            duration: 6000,
+            action: {
+              label: "Abrir WhatsApp",
+              onClick: () => window.open(url, "_blank")
+            }
+          });
+        } else {
+          toast.success("WhatsApp aberto! Envie a confirmação para o cliente 💬", { 
+            duration: 5000 
+          });
+        }
+      } else {
+        toast.info("Cliente não tem WhatsApp cadastrado. Adicione nas configurações do cliente.");
       }
       
-      navigate("/agenda");
+      // Aguardar 2 segundos antes de navegar para dar tempo do usuário ver as mensagens
+      setTimeout(() => {
+        navigate("/agenda");
+      }, 2000);
     } catch (error: any) {
       toast.error(error.message || "Erro ao criar agendamento");
     } finally {
