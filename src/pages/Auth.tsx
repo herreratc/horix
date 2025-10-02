@@ -51,13 +51,27 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if (error) throw error;
-      navigate("/");
+      
+      // Check if user needs onboarding
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("profissao")
+          .eq("id", data.user.id)
+          .single();
+
+        if (profile && profile.profissao === "Profissional") {
+          navigate("/onboarding");
+        } else {
+          navigate("/dashboard");
+        }
+      }
     } catch (error: any) {
       toast.error(error.message || "Erro ao fazer login");
     } finally {
