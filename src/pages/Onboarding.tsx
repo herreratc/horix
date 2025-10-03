@@ -4,21 +4,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { ChevronRight, ChevronLeft, CheckCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, CheckCircle, Briefcase } from "lucide-react";
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [userId, setUserId] = useState<string>("");
   
   const [nome, setNome] = useState("");
   const [profissao, setProfissao] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [horarioInicio, setHorarioInicio] = useState("09:00");
   const [horarioFim, setHorarioFim] = useState("18:00");
+
+  // Serviço obrigatório
+  const [servicoNome, setServicoNome] = useState("");
+  const [servicoDescricao, setServicoDescricao] = useState("");
+  const [servicoDuracao, setServicoDuracao] = useState(60);
+  const [servicoValor, setServicoValor] = useState("");
 
   useEffect(() => {
     checkProfile();
@@ -30,6 +38,8 @@ export default function Onboarding() {
       navigate("/auth");
       return;
     }
+
+    setUserId(user.id);
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -51,7 +61,11 @@ export default function Onboarding() {
       toast.error("Por favor, informe sua profissão");
       return;
     }
-    if (step < 4) setStep(step + 1);
+    if (step === 4 && !servicoNome.trim()) {
+      toast.error("Por favor, cadastre pelo menos um serviço para continuar");
+      return;
+    }
+    if (step < 5) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -65,7 +79,8 @@ export default function Onboarding() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const { error } = await supabase
+      // Atualizar perfil
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({
           nome,
@@ -76,27 +91,41 @@ export default function Onboarding() {
         })
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      toast.success("Perfil configurado com sucesso! 🎉");
+      // Criar serviço obrigatório
+      const { error: servicoError } = await supabase
+        .from("servicos")
+        .insert({
+          user_id: user.id,
+          nome: servicoNome,
+          descricao: servicoDescricao || null,
+          duracao: servicoDuracao,
+          valor: servicoValor ? parseFloat(servicoValor) : null,
+          ativo: true
+        });
+
+      if (servicoError) throw servicoError;
+
+      toast.success("Perfil e serviço configurados com sucesso! 🎉");
       navigate("/guia-inicial");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar perfil");
+      toast.error(error.message || "Erro ao salvar configurações");
     } finally {
       setLoading(false);
     }
   };
 
-  const progress = (step / 4) * 100;
+  const progress = (step / 5) * 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-accent/10">
       <Card className="w-full max-w-lg">
         <CardHeader>
           <div className="space-y-2">
-            <CardTitle className="text-2xl">Bem-vindo! 🎉</CardTitle>
+            <CardTitle className="text-2xl text-foreground">Bem-vindo! 🎉</CardTitle>
             <CardDescription>
-              Vamos configurar seu perfil em 4 passos simples
+              Vamos configurar seu perfil em 5 passos simples
             </CardDescription>
             <Progress value={progress} className="h-2" />
           </div>
@@ -238,14 +267,106 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* Step 4: WhatsApp */}
+          {/* Step 4: Serviço (OBRIGATÓRIO) */}
           {step === 4 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Briefcase className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Cadastre seu primeiro serviço</h3>
+                <p className="text-sm text-muted-foreground">
+                  Você precisa cadastrar pelo menos um serviço para continuar
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="servico-nome">Nome do Serviço *</Label>
+                  <Input
+                    id="servico-nome"
+                    placeholder="Ex: Corte de Cabelo, Consulta, Aula Personal..."
+                    value={servicoNome}
+                    onChange={(e) => setServicoNome(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="servico-descricao">Descrição (opcional)</Label>
+                  <Textarea
+                    id="servico-descricao"
+                    placeholder="Descreva o serviço..."
+                    value={servicoDescricao}
+                    onChange={(e) => setServicoDescricao(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="servico-duracao">Duração (min) *</Label>
+                    <Input
+                      id="servico-duracao"
+                      type="number"
+                      value={servicoDuracao}
+                      onChange={(e) => setServicoDuracao(parseInt(e.target.value))}
+                      min="5"
+                      step="5"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="servico-valor">Valor (R$)</Label>
+                    <Input
+                      id="servico-valor"
+                      type="number"
+                      placeholder="0.00"
+                      value={servicoValor}
+                      onChange={(e) => setServicoValor(e.target.value)}
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                <p className="text-sm text-foreground/80">
+                  💡 <strong>Dica:</strong> Você poderá adicionar mais serviços depois na seção "Serviços" do menu.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleBack} 
+                  variant="outline"
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+                <Button 
+                  onClick={handleNext} 
+                  className="flex-1 gap-2"
+                  size="lg"
+                >
+                  Próximo
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: WhatsApp */}
+          {step === 5 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
                   <span className="text-2xl">📱</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Qual seu WhatsApp?</h3>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">Qual seu WhatsApp?</h3>
                 <p className="text-sm text-muted-foreground">
                   Para enviar lembretes aos seus clientes (opcional)
                 </p>
@@ -268,7 +389,7 @@ export default function Onboarding() {
                 <div className="flex gap-3">
                   <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sm">Tudo pronto!</p>
+                    <p className="font-medium text-sm text-foreground">Tudo pronto!</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Você está a um clique de começar a usar sua agenda inteligente
                     </p>
