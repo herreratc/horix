@@ -1,18 +1,54 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, ArrowLeft, CheckCircle2, QrCode, Sparkles, Building } from "lucide-react";
+import { ArrowLeft, CheckCircle2, CreditCard, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 export default function Assinatura() {
   const navigate = useNavigate();
-  const pixKey = "51.243.904/0001-89";
-  const pixTipo = "CNPJ";
-  const monthlyPrice = "R$ 29,00";
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const copyPixKey = () => {
-    navigator.clipboard.writeText(pixKey);
-    toast.success("Chave Pix CNPJ copiada!");
+  const monthlyPrice = "R$ 49,90";
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserId(user.id);
+    });
+  }, []);
+
+  const handlePayment = async () => {
+    if (!userId) {
+      toast.error("Você precisa estar logado para assinar");
+      navigate("/auth");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mercadopago-create-preference', {
+        body: {
+          title: 'Plano Premium - Horix',
+          price: 49.90,
+          userId: userId,
+        }
+      });
+
+      if (error) throw error;
+
+      console.log('Preference created:', data);
+      
+      // Redirecionar para checkout do Mercado Pago
+      window.location.href = data.initPoint;
+
+    } catch (error) {
+      console.error('Error creating preference:', error);
+      toast.error("Erro ao processar pagamento. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -132,117 +168,94 @@ export default function Assinatura() {
 
         {/* Payment Section */}
         <Card className="border-2 border-primary shadow-lg">
-          <CardHeader className="border-b bg-primary/5">
+          <CardHeader className="border-b bg-gradient-to-r from-primary/10 to-accent/10">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <QrCode className="h-6 w-6 text-primary" />
+                <CreditCard className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Pagamento via Pix</CardTitle>
+                <CardTitle className="text-2xl">Pagamento Seguro</CardTitle>
                 <CardDescription className="text-base">
-                  Rápido, seguro e prático
+                  PIX ou cartão de crédito em até 12x
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
-            {/* Pix Info */}
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-xl space-y-4 border border-primary/20">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Building className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-medium text-muted-foreground">Chave Pix ({pixTipo})</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <code className="flex-1 bg-background px-4 py-3 rounded-lg font-mono text-sm border">
-                    {pixKey}
-                  </code>
-                  <Button size="lg" variant="default" onClick={copyPixKey} className="gap-2">
-                    <Copy className="h-4 w-4" />
-                    Copiar
-                  </Button>
+            {/* Price Display */}
+            <div className="text-center py-8 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 rounded-2xl border-2 border-primary/20">
+              <p className="text-sm text-muted-foreground mb-2 font-medium">Assinatura mensal</p>
+              <p className="text-6xl font-bold text-primary mb-2">{monthlyPrice}</p>
+              <p className="text-lg text-muted-foreground">ou <span className="font-semibold text-foreground">12x de R$ 4,99</span></p>
+            </div>
+
+            {/* Payment Methods */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20">
+                <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-base mb-1">PIX à vista</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pagamento instantâneo com aprovação automática
+                  </p>
                 </div>
               </div>
-              <div className="pt-4 border-t border-border/50">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Valor da Assinatura</p>
-                <p className="text-3xl font-bold text-primary">{monthlyPrice}</p>
-                <p className="text-sm text-muted-foreground mt-1">Pagamento mensal recorrente</p>
+
+              <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-accent/5 to-transparent rounded-lg border border-accent/20">
+                <CheckCircle2 className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-base mb-1">Cartão de crédito</p>
+                  <p className="text-sm text-muted-foreground">
+                    Parcele em até 12x sem juros no cartão
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary/10 to-accent/5 rounded-lg border border-primary/30">
+                <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-base mb-1">100% Seguro</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pagamento processado pelo Mercado Pago com criptografia de ponta a ponta
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Instructions */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <span className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm">
-                  1
-                </span>
-                Como ativar seu plano Premium
-              </h3>
-              <ol className="space-y-3 ml-10">
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    1
+            {/* CTA Button */}
+            <div className="pt-4">
+              <Button 
+                onClick={handlePayment}
+                disabled={loading}
+                className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
+                size="lg"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-5 w-5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
+                    Processando...
                   </span>
-                  <span className="text-sm pt-0.5">Copie a chave Pix usando o botão acima</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    2
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Assinar Plano Premium
                   </span>
-                  <span className="text-sm pt-0.5">Abra o aplicativo do seu banco</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    3
-                  </span>
-                  <span className="text-sm pt-0.5">Faça um Pix no valor de <strong>{monthlyPrice}</strong></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    4
-                  </span>
-                  <span className="text-sm pt-0.5">Tire uma captura de tela do comprovante</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    5
-                  </span>
-                  <span className="text-sm pt-0.5">
-                    Envie o comprovante para nosso WhatsApp: <strong className="text-primary">(11) 99999-9999</strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    6
-                  </span>
-                  <span className="text-sm pt-0.5">Aguarde a confirmação em até 24 horas</span>
-                </li>
-              </ol>
+                )}
+              </Button>
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                Ao clicar em "Assinar", você será redirecionado para o checkout seguro do Mercado Pago
+              </p>
             </div>
 
-            {/* Info boxes */}
-            <div className="grid md:grid-cols-2 gap-4 pt-4">
-              <div className="bg-accent/10 p-4 rounded-lg border border-accent/20">
-                <div className="flex gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-sm mb-1">Ativação Rápida</p>
-                    <p className="text-xs text-muted-foreground">
-                      Seu plano Premium será ativado em até 24 horas após a confirmação do pagamento
-                    </p>
-                  </div>
-                </div>
+            {/* Benefits Reminder */}
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t">
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <p className="text-2xl font-bold text-primary">∞</p>
+                <p className="text-xs text-muted-foreground mt-1">Agendamentos ilimitados</p>
               </div>
-              <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-                <div className="flex gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-sm mb-1">Suporte Dedicado</p>
-                    <p className="text-xs text-muted-foreground">
-                      Dúvidas? Entre em contato pelo WhatsApp para suporte prioritário
-                    </p>
-                  </div>
-                </div>
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <p className="text-2xl font-bold text-primary">24h</p>
+                <p className="text-xs text-muted-foreground mt-1">Ativação rápida</p>
               </div>
             </div>
           </CardContent>

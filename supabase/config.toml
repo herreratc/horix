@@ -1,1 +1,7 @@
 project_id = "ckgtwwtgutvgjqszhwvh"
+
+[functions.mercadopago-create-preference]
+verify_jwt = false
+
+[functions.mercadopago-webhook]
+verify_jwt = false
