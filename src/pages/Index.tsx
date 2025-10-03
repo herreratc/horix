@@ -22,7 +22,7 @@ const Index = () => {
           <div className="max-w-6xl mx-auto text-center space-y-8 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Novo: Agendamento Público</span>
+              <span className="text-sm font-medium text-foreground">Novo: Agendamento Público</span>
             </div>
             
             <div className="flex justify-center mb-12 float-animation">
@@ -33,7 +33,7 @@ const Index = () => {
               />
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-foreground">
               Sistema de Agendamentos{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent inline-block">
                 Inteligente
@@ -79,9 +79,9 @@ const Index = () => {
             <div className="text-center space-y-4 mb-16 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 backdrop-blur-sm">
                 <Zap className="h-3 w-3 text-accent" />
-                <span className="text-xs font-medium text-accent">Recursos</span>
+                <span className="text-xs font-medium text-foreground">Recursos</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold">Tudo que você precisa</h2>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Tudo que você precisa</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                 Ferramentas profissionais para gerenciar sua agenda com eficiência
               </p>
@@ -117,8 +117,8 @@ const Index = () => {
                     <div className={`h-14 w-14 rounded-2xl bg-gradient-${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
                       <feature.icon className="h-7 w-7 text-white" />
                     </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                    <CardDescription className="text-base leading-relaxed">
+                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
+                    <CardDescription className="text-base leading-relaxed text-muted-foreground">
                       {feature.description}
                     </CardDescription>
                   </CardHeader>
@@ -134,7 +134,7 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-8 animate-fade-in">
                 <div className="space-y-4">
-                  <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+                  <h2 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
                     Feito para{" "}
                     <span className="bg-gradient-primary bg-clip-text text-transparent">
                       Profissionais
@@ -171,7 +171,7 @@ const Index = () => {
                         <benefit.icon className={`h-6 w-6 text-${benefit.color}`} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg mb-1">{benefit.title}</h3>
+                        <h3 className="font-semibold text-lg mb-1 text-foreground">{benefit.title}</h3>
                         <p className="text-muted-foreground">{benefit.description}</p>
                       </div>
                     </div>
@@ -187,7 +187,7 @@ const Index = () => {
                     <Calendar className="relative h-32 w-32 text-primary float-animation" />
                   </div>
                   <div className="space-y-2">
-                    <p className="text-2xl font-bold">Sua Agenda Profissional</p>
+                    <p className="text-2xl font-bold text-foreground">Sua Agenda Profissional</p>
                     <p className="text-muted-foreground">Sempre organizada e acessível</p>
                   </div>
                 </div>
@@ -202,9 +202,9 @@ const Index = () => {
             <div className="text-center space-y-4 mb-16 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 backdrop-blur-sm">
                 <TrendingUp className="h-3 w-3 text-accent" />
-                <span className="text-xs font-medium text-accent">Preços</span>
+                <span className="text-xs font-medium text-foreground">Preços</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold">Planos Transparentes</h2>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Planos Transparentes</h2>
               <p className="text-muted-foreground text-lg">Comece grátis. Escale quando precisar.</p>
             </div>
             
@@ -212,11 +212,11 @@ const Index = () => {
               <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                 <CardHeader className="space-y-4">
                   <div className="space-y-2">
-                    <CardTitle className="text-2xl">Free</CardTitle>
-                    <CardDescription>Perfeito para começar</CardDescription>
+                    <CardTitle className="text-2xl text-foreground">Free</CardTitle>
+                    <CardDescription className="text-muted-foreground">Perfeito para começar</CardDescription>
                   </div>
                   <div>
-                    <span className="text-5xl font-bold">R$ 0</span>
+                    <span className="text-5xl font-bold text-foreground">R$ 0</span>
                     <span className="text-muted-foreground text-lg">/mês</span>
                   </div>
                 </CardHeader>
@@ -230,7 +230,7 @@ const Index = () => {
                     ].map((feature, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
-                        <span>{feature}</span>
+                        <span className="text-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -253,11 +253,11 @@ const Index = () => {
                 </div>
                 <CardHeader className="space-y-4 pt-8">
                   <div className="space-y-2">
-                    <CardTitle className="text-2xl">Premium</CardTitle>
-                    <CardDescription>Para profissionais sérios</CardDescription>
+                    <CardTitle className="text-2xl text-foreground">Premium</CardTitle>
+                    <CardDescription className="text-muted-foreground">Para profissionais sérios</CardDescription>
                   </div>
                   <div>
-                    <span className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">R$ 29</span>
+                    <span className="text-5xl font-bold text-foreground">R$ 29</span>
                     <span className="text-muted-foreground text-lg">/mês</span>
                   </div>
                 </CardHeader>
@@ -271,7 +271,7 @@ const Index = () => {
                     ].map((feature, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
-                        <span className={feature.bold ? "font-semibold" : ""}>{feature.text}</span>
+                        <span className={feature.bold ? "font-semibold text-foreground" : "text-foreground"}>{feature.text}</span>
                       </div>
                     ))}
                   </div>
@@ -295,7 +295,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
               <div className="relative rounded-3xl border-2 border-primary/30 bg-card/50 backdrop-blur-xl p-12 text-center space-y-8">
                 <div className="space-y-4">
-                  <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+                  <h2 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
                     Pronto para Transformar<br />sua Agenda?
                   </h2>
                   <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
