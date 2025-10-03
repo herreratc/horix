@@ -11,7 +11,7 @@ export default function Assinatura() {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const monthlyPrice = "R$ 49,90";
+  const monthlyPrice = "R$ 29,90";
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -31,7 +31,7 @@ export default function Assinatura() {
       const { data, error } = await supabase.functions.invoke('mercadopago-create-preference', {
         body: {
           title: 'Plano Premium - Horix',
-          price: 49.90,
+          price: 29.90,
           userId: userId,
         }
       });
@@ -186,7 +186,7 @@ export default function Assinatura() {
             <div className="text-center py-8 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 rounded-2xl border-2 border-primary/20">
               <p className="text-sm text-muted-foreground mb-2 font-medium">Assinatura mensal</p>
               <p className="text-6xl font-bold text-primary mb-2">{monthlyPrice}</p>
-              <p className="text-lg text-muted-foreground">ou <span className="font-semibold text-foreground">12x de R$ 4,99</span></p>
+              <p className="text-lg text-muted-foreground">ou <span className="font-semibold text-foreground">12x de R$ 2,99</span></p>
             </div>
 
             {/* Payment Methods */}

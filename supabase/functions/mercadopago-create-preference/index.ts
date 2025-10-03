@@ -26,7 +26,7 @@ serve(async (req) => {
         {
           title: title || 'Plano Premium - Horix',
           quantity: 1,
-          unit_price: parseFloat(price) || 49.90,
+          unit_price: parseFloat(price) || 29.90,
           currency_id: 'BRL',
         }
       ],
