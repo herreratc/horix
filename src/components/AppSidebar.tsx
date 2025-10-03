@@ -43,7 +43,7 @@ export function AppSidebar() {
   const getNavClass = (isActive: boolean) => {
     return isActive 
       ? "bg-primary text-primary-foreground font-medium hover:bg-primary hover:text-primary-foreground" 
-      : "hover:bg-accent/10 hover:text-accent-foreground";
+      : "text-foreground hover:bg-accent/10 hover:text-foreground";
   };
 
   return (
@@ -54,7 +54,7 @@ export function AppSidebar() {
           {!collapsed ? (
             <div className="flex items-center gap-3">
               <img src={logo} alt="Horix" className="h-10 w-auto drop-shadow-lg" />
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-foreground">
                 HORIX
               </span>
             </div>
@@ -64,7 +64,7 @@ export function AppSidebar() {
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Menu Principal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
@@ -76,7 +76,7 @@ export function AppSidebar() {
                         to={item.url} 
                         className={getNavClass(isActive)}
                       >
-                        <item.icon className="h-5 w-5" />
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
                         {!collapsed && <span>{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
@@ -99,8 +99,8 @@ export function AppSidebar() {
             </div>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive">
-              <LogOut className="h-5 w-5" />
+            <SidebarMenuButton onClick={handleLogout} className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+              <LogOut className="h-5 w-5 flex-shrink-0" />
               {!collapsed && <span>Sair</span>}
             </SidebarMenuButton>
           </SidebarMenuItem>
