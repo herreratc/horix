@@ -19,6 +19,9 @@ export default function ClienteForm() {
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [dataNascimento, setDataNascimento] = useState("");
   const [notas, setNotas] = useState("");
 
   useEffect(() => {
@@ -52,6 +55,9 @@ export default function ClienteForm() {
       setEmail(data.email || "");
       setTelefone(data.telefone || "");
       setWhatsapp(data.whatsapp || "");
+      setCpf(data.cpf || "");
+      setEndereco(data.endereco || "");
+      setDataNascimento(data.data_nascimento || "");
       setNotas(data.notas || "");
     }
   };
@@ -69,6 +75,9 @@ export default function ClienteForm() {
         email: email || null,
         telefone: telefone || null,
         whatsapp: whatsapp || null,
+        cpf: cpf || null,
+        endereco: endereco || null,
+        data_nascimento: dataNascimento || null,
         notas: notas || null,
         user_id: user.id,
       };
@@ -166,6 +175,38 @@ export default function ClienteForm() {
                     onChange={(e) => setWhatsapp(e.target.value)}
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cpf">CPF</Label>
+                  <Input
+                    id="cpf"
+                    placeholder="000.000.000-00"
+                    value={cpf}
+                    onChange={(e) => setCpf(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dataNascimento">Data de Nascimento</Label>
+                  <Input
+                    id="dataNascimento"
+                    type="date"
+                    value={dataNascimento}
+                    onChange={(e) => setDataNascimento(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="endereco">Endereço</Label>
+                <Input
+                  id="endereco"
+                  placeholder="Rua, número, bairro, cidade - UF"
+                  value={endereco}
+                  onChange={(e) => setEndereco(e.target.value)}
+                />
               </div>
 
               <div className="space-y-2">
