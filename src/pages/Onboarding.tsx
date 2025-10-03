@@ -79,7 +79,7 @@ export default function Onboarding() {
       if (error) throw error;
 
       toast.success("Perfil configurado com sucesso! 🎉");
-      navigate("/dashboard");
+      navigate("/guia-inicial");
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar perfil");
     } finally {
