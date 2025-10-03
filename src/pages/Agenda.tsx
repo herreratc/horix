@@ -121,7 +121,7 @@ export default function Agenda() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">Agenda</h1>
+              <h1 className="text-3xl font-bold text-foreground">Agenda</h1>
               <p className="text-muted-foreground">Visualize e gerencie seus agendamentos</p>
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function Agenda() {
             <CardContent className="pt-6">
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold capitalize">
+                <h2 className="text-xl font-semibold capitalize text-foreground">
                   {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
                 </h2>
                 <div className="flex gap-2">
@@ -199,7 +199,7 @@ export default function Agenda() {
                         ${isToday ? "ring-2 ring-accent" : ""}
                       `}
                     >
-                      <div className="font-medium text-sm mb-1">{format(day, "d")}</div>
+                      <div className="font-medium text-sm mb-1 text-foreground">{format(day, "d")}</div>
                       {dayAgendamentos.length > 0 && (
                         <div className="space-y-1">
                           {dayAgendamentos.slice(0, 2).map(agend => (
@@ -233,7 +233,7 @@ export default function Agenda() {
           {/* Day Details */}
           <Card>
             <CardContent className="pt-6">
-              <h3 className="font-semibold mb-4">
+              <h3 className="font-semibold mb-4 text-foreground">
                 {selectedDate
                   ? format(selectedDate, "d 'de' MMMM", { locale: ptBR })
                   : "Selecione um dia"}
@@ -252,7 +252,7 @@ export default function Agenda() {
                     className="p-3 border rounded-lg hover:border-primary/50 transition-colors space-y-2"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{agend.hora}</span>
+                      <span className="font-medium text-foreground">{agend.hora}</span>
                       <span
                         className={`text-xs px-2 py-1 rounded ${
                           agend.status === "confirmado"
@@ -265,7 +265,7 @@ export default function Agenda() {
                         {agend.status}
                       </span>
                     </div>
-                    <p className="text-sm font-medium">{getClienteName(agend.cliente_id)}</p>
+                    <p className="text-sm font-medium text-foreground">{getClienteName(agend.cliente_id)}</p>
                     {agend.servico && (
                       <p className="text-xs text-muted-foreground">{agend.servico}</p>
                     )}

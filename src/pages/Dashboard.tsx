@@ -169,7 +169,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
-                <div className="text-3xl font-bold">{stat.value}</div>
+                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
                 <div className="text-xs text-accent font-medium">
                   ↑ {stat.change} vs mês anterior
                 </div>
@@ -191,7 +191,7 @@ export default function Dashboard() {
                         <Sparkles className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-lg">Plano Free</p>
+                        <p className="font-bold text-lg text-foreground">Plano Free</p>
                         <p className="text-sm text-muted-foreground">
                           {profile.agendamentos_mes}/30 agendamentos
                         </p>
@@ -233,7 +233,7 @@ export default function Dashboard() {
                   <Share2 className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold mb-1">Link de Agendamento</h3>
+                  <h3 className="font-bold mb-1 text-foreground">Link de Agendamento</h3>
                   <p className="text-xs text-muted-foreground truncate">
                     {window.location.origin}/agendamento/{user.id}
                   </p>
@@ -253,7 +253,7 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Ações Rápidas</h2>
+          <h2 className="text-2xl font-bold text-foreground">Ações Rápidas</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Button 
               size="lg" 
@@ -296,7 +296,7 @@ export default function Dashboard() {
 
         {/* Recent Appointments */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Próximos Agendamentos</h2>
+          <h2 className="text-2xl font-bold text-foreground">Próximos Agendamentos</h2>
           <Card className="border-2 border-border">
             <CardContent className="p-6">
               {recentAppointments.length > 0 ? (
@@ -311,7 +311,7 @@ export default function Dashboard() {
                         <Calendar className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold">{apt.clientes?.nome || 'Cliente'}</p>
+                        <p className="font-bold text-foreground">{apt.clientes?.nome || 'Cliente'}</p>
                         <p className="text-sm text-muted-foreground">
                           {formatDate(apt.data)} • {apt.hora}
                         </p>
@@ -328,7 +328,7 @@ export default function Dashboard() {
                     <AlertCircle className="h-10 w-10 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-bold text-lg">Nenhum agendamento</p>
+                    <p className="font-bold text-lg text-foreground">Nenhum agendamento</p>
                     <p className="text-muted-foreground">Crie seu primeiro agendamento</p>
                   </div>
                   <Button 
@@ -349,11 +349,11 @@ export default function Dashboard() {
           <CardHeader>
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-accent" />
-              <CardTitle className="text-xl">Dica do Dia</CardTitle>
+              <CardTitle className="text-xl text-foreground">Dica do Dia</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
+            <p className="text-foreground/80">
               Compartilhe seu link público de agendamento nas redes sociais para que seus clientes possam agendar diretamente! 🚀
             </p>
           </CardContent>
