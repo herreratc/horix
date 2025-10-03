@@ -74,7 +74,7 @@ export default function Dashboard() {
   };
 
   const copyLinkPublico = () => {
-    const link = `${window.location.origin}/p/${user.id}`;
+    const link = `${window.location.origin}/agendamento/${user.id}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado! 🎉");
   };
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold mb-1">Link de Agendamento</h3>
                   <p className="text-xs text-muted-foreground truncate">
-                    {window.location.origin}/p/{user.id}
+                    {window.location.origin}/agendamento/{user.id}
                   </p>
                 </div>
                 <Button 
