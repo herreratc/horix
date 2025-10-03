@@ -50,16 +50,19 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent>
         {/* Logo */}
-        <div className="p-4 flex items-center justify-center border-b border-border">
+        <div className="p-6 flex items-center justify-center border-b border-border">
           {!collapsed ? (
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Horix" className="h-10 w-auto drop-shadow-lg" />
-              <span className="text-xl font-bold text-foreground">
-                HORIX
-              </span>
-            </div>
+            <img 
+              src={logo} 
+              alt="Horix" 
+              className="h-20 w-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300" 
+            />
           ) : (
-            <img src={logo} alt="Horix" className="h-8 w-auto drop-shadow-lg" />
+            <img 
+              src={logo} 
+              alt="Horix" 
+              className="h-10 w-auto drop-shadow-lg hover:scale-110 transition-transform duration-300" 
+            />
           )}
         </div>
 
