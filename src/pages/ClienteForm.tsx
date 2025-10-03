@@ -8,6 +8,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
+
+const clienteSchema = z.object({
+  nome: z.string().trim().min(1, "Nome é obrigatório").max(100, "Nome muito longo"),
+  email: z.string().trim().email("Email inválido").max(255, "Email muito longo").optional().or(z.literal("")),
+  telefone: z.string().trim().regex(/^[\d\s\(\)\-\+]*$/, "Telefone contém caracteres inválidos").max(20, "Telefone muito longo").optional().or(z.literal("")),
+  whatsapp: z.string().trim().regex(/^[\d\s\(\)\-\+]*$/, "WhatsApp contém caracteres inválidos").max(20, "WhatsApp muito longo").optional().or(z.literal("")),
+  cpf: z.string().trim().regex(/^[\d\.\-]*$/, "CPF contém caracteres inválidos").max(14, "CPF inválido").optional().or(z.literal("")),
+  dataNascimento: z.string().optional().or(z.literal("")),
+  endereco: z.string().trim().max(500, "Endereço muito longo").optional().or(z.literal("")),
+  notas: z.string().trim().max(1000, "Notas muito longas").optional().or(z.literal("")),
+});
 
 export default function ClienteForm() {
   const navigate = useNavigate();
@@ -64,6 +76,26 @@ export default function ClienteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate input
+    try {
+      clienteSchema.parse({
+        nome,
+        email: email || "",
+        telefone: telefone || "",
+        whatsapp: whatsapp || "",
+        cpf: cpf || "",
+        dataNascimento: dataNascimento || "",
+        endereco: endereco || "",
+        notas: notas || "",
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+        return;
+      }
+    }
+    
     setLoading(true);
 
     try {
@@ -101,7 +133,10 @@ export default function ClienteForm() {
 
       navigate("/clientes");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar cliente");
+      const errorMessage = error?.message?.includes("duplicate") 
+        ? "Já existe um cliente com esses dados"
+        : "Erro ao salvar cliente. Tente novamente.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

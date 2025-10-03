@@ -7,8 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar, Clock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { format, addDays, startOfDay, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+const agendamentoPublicoSchema = z.object({
+  nomeCliente: z.string().trim().min(1, "Nome é obrigatório").max(100, "Nome muito longo"),
+  emailCliente: z.string().trim().email("Email inválido").max(255, "Email muito longo"),
+  whatsappCliente: z.string().trim().regex(/^[\d\s\(\)\-\+]*$/, "WhatsApp contém caracteres inválidos").min(10, "WhatsApp deve ter pelo menos 10 dígitos").max(20, "WhatsApp muito longo"),
+});
 
 interface Profile {
   profissao: string;
@@ -125,11 +132,31 @@ export default function AgendamentoPublico() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!dataSelecionada || !horaSelecionada) {
+      toast.error("Selecione uma data e horário");
+      return;
+    }
+
+    // Validate input
+    try {
+      agendamentoPublicoSchema.parse({
+        nomeCliente: nome,
+        emailCliente: email,
+        whatsappCliente: whatsapp,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+        return;
+      }
+    }
+
     setSubmitting(true);
 
     try {
-      if (!userId || !dataSelecionada || !horaSelecionada) {
-        throw new Error("Por favor, selecione uma data e horário");
+      if (!userId) {
+        throw new Error("Link inválido");
       }
 
       // Create client
@@ -164,7 +191,10 @@ export default function AgendamentoPublico() {
       setSuccess(true);
       toast.success("Agendamento realizado com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao criar agendamento");
+      const errorMessage = error?.message?.includes("duplicate") 
+        ? "Já existe um agendamento para este horário"
+        : "Erro ao criar agendamento. Tente novamente.";
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
