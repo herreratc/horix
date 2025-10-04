@@ -40,9 +40,9 @@ const Index = () => {
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-foreground">
-                  Transforme seu Negócio com{" "}
+                  Transforme Seu Negócio com o{" "}
                   <span className="bg-gradient-primary bg-clip-text text-transparent inline-block">
-                    Agendamento Inteligente
+                    Horix
                   </span>
                 </h1>
                 
