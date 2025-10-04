@@ -41,7 +41,7 @@ const Index = () => {
                 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-foreground">
                   Transforme Seu Negócio com o{" "}
-                  <span className="bg-gradient-primary bg-clip-text text-transparent inline-block">
+                  <span className="bg-gradient-primary bg-clip-text text-transparent dark:bg-gradient-primary dark:bg-clip-text dark:text-transparent text-foreground inline-block font-black">
                     Horix
                   </span>
                 </h1>
