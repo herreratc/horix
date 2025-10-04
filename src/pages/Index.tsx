@@ -3,9 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
 import logo from "@/assets/logo.png";
-import heroDashboard from "@/assets/hero-dashboard.jpg";
-import whatsappReminder from "@/assets/whatsapp-reminder.jpg";
-import analyticsDashboard from "@/assets/analytics-dashboard.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -77,14 +74,17 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-30" />
-                <div className="relative rounded-3xl overflow-hidden border-2 border-primary/30 shadow-2xl hover:scale-105 transition-transform duration-500">
-                  <img 
-                    src={heroDashboard} 
-                    alt="Dashboard de Agendamentos Horix" 
-                    className="w-full h-auto"
-                  />
+              <div className="relative animate-fade-in hidden lg:block" style={{ animationDelay: "0.2s" }}>
+                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-20" />
+                <div className="relative rounded-3xl border-2 border-border/50 bg-card/50 backdrop-blur-xl p-12 aspect-square flex flex-col items-center justify-center text-center space-y-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-xl opacity-50" />
+                    <Calendar className="relative h-32 w-32 text-primary float-animation" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-2xl font-bold text-foreground">Dashboard Profissional</p>
+                    <p className="text-muted-foreground">Visualize suas tarefas</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -105,47 +105,37 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
                   icon: Clock,
                   title: "Agendamento Rápido",
                   description: "Crie agendamentos em segundos com interface otimizada e intuitiva.",
-                  image: heroDashboard
+                  color: "primary"
                 },
                 {
                   icon: Bell,
                   title: "Lembretes Automáticos",
                   description: "Envie lembretes via WhatsApp e reduza faltas em até 80%.",
-                  image: whatsappReminder
+                  color: "accent"
                 },
                 {
                   icon: BarChart3,
                   title: "Relatórios Inteligentes",
                   description: "Análises e métricas para decisões baseadas em dados reais.",
-                  image: analyticsDashboard
+                  color: "primary"
                 }
               ].map((feature, i) => (
                 <Card 
                   key={i}
-                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group overflow-hidden"
+                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group"
                   style={{ animationDelay: `${i * 0.1}s` }}
                 >
-                  <div className="relative h-48 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-primary opacity-10" />
-                    <img 
-                      src={feature.image} 
-                      alt={feature.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
                   <CardHeader className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg">
-                        <feature.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
+                    <div className={`h-14 w-14 rounded-2xl bg-gradient-${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                      <feature.icon className="h-7 w-7 text-white" />
                     </div>
+                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                     <CardDescription className="text-base leading-relaxed text-muted-foreground">
                       {feature.description}
                     </CardDescription>
@@ -208,18 +198,15 @@ const Index = () => {
               </div>
 
               <div className="relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-30" />
-                <div className="relative rounded-3xl overflow-hidden border-2 border-primary/30 shadow-2xl">
-                  <img 
-                    src={analyticsDashboard} 
-                    alt="Relatórios e Analytics" 
-                    className="w-full h-auto hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-8">
-                    <div className="space-y-2">
-                      <p className="text-2xl font-bold text-foreground">Sua Agenda Profissional</p>
-                      <p className="text-muted-foreground">Sempre organizada e acessível</p>
-                    </div>
+                <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
+                <div className="relative rounded-3xl border-2 border-border/50 bg-card/50 backdrop-blur-xl p-12 aspect-square flex flex-col items-center justify-center text-center space-y-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-xl opacity-50" />
+                    <Calendar className="relative h-32 w-32 text-primary float-animation" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-2xl font-bold text-foreground">Sua Agenda Profissional</p>
+                    <p className="text-muted-foreground">Sempre organizada e acessível</p>
                   </div>
                 </div>
               </div>
