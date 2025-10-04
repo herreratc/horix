@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
+import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp, Users, MessageSquare, CalendarCheck } from "lucide-react";
 import logo from "@/assets/logo.png";
+import heroDashboard from "@/assets/hero-dashboard.jpg";
+import whatsappReminder from "@/assets/whatsapp-reminder.jpg";
+import analyticsDashboard from "@/assets/analytics-dashboard.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -36,15 +39,15 @@ const Index = () => {
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-foreground">
-                  Sistema de Agendamentos{" "}
+                  Transforme seu Negócio com{" "}
                   <span className="bg-gradient-primary bg-clip-text text-transparent inline-block">
-                    Inteligente
+                    Agendamento Inteligente
                   </span>
                 </h1>
                 
                 <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-                  Simplifique seus agendamentos com automação inteligente. 
-                  Mais tempo para você, menos tempo gerenciando agenda.
+                  Gerencie clientes, envie lembretes automáticos via WhatsApp e acompanhe seus resultados. 
+                  <span className="block mt-2 font-semibold text-foreground">Reduza faltas em até 80% e conquiste mais tempo para focar no que importa.</span>
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center pt-4">
@@ -76,15 +79,13 @@ const Index = () => {
 
               <div className="relative animate-fade-in hidden lg:block" style={{ animationDelay: "0.2s" }}>
                 <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-20" />
-                <div className="relative rounded-3xl border-2 border-border/50 bg-card/50 backdrop-blur-xl p-12 aspect-square flex flex-col items-center justify-center text-center space-y-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-xl opacity-50" />
-                    <Calendar className="relative h-32 w-32 text-primary float-animation" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold text-foreground">Dashboard Profissional</p>
-                    <p className="text-muted-foreground">Visualize suas tarefas</p>
-                  </div>
+                <div className="relative rounded-3xl overflow-hidden border-2 border-border/50 shadow-2xl">
+                  <img 
+                    src={heroDashboard} 
+                    alt="Dashboard do Horix mostrando agenda e agendamentos" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
               </div>
             </div>
@@ -99,46 +100,68 @@ const Index = () => {
                 <Zap className="h-3 w-3 text-accent" />
                 <span className="text-xs font-medium text-foreground">Recursos</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Tudo que você precisa</h2>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Como o Horix Funciona</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Ferramentas profissionais para gerenciar sua agenda com eficiência
+                Três recursos essenciais que vão revolucionar a forma como você gerencia seu tempo
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  icon: Clock,
-                  title: "Agendamento Rápido",
-                  description: "Crie agendamentos em segundos com interface otimizada e intuitiva.",
-                  color: "primary"
+                  icon: CalendarCheck,
+                  title: "Agendamento Simplificado",
+                  description: "Crie e gerencie agendamentos em segundos. Seus clientes também podem agendar diretamente pelo link público.",
+                  image: heroDashboard,
+                  color: "primary",
+                  features: ["Interface intuitiva", "Link público de agendamento", "Visualização em calendário"]
                 },
                 {
-                  icon: Bell,
+                  icon: MessageSquare,
                   title: "Lembretes Automáticos",
-                  description: "Envie lembretes via WhatsApp e reduza faltas em até 80%.",
-                  color: "accent"
+                  description: "Envie lembretes via WhatsApp automaticamente. Reduza faltas em até 80% sem esforço manual.",
+                  image: whatsappReminder,
+                  color: "accent",
+                  features: ["WhatsApp integrado", "Envio automático", "Personalização de mensagens"]
                 },
                 {
                   icon: BarChart3,
-                  title: "Relatórios Inteligentes",
-                  description: "Análises e métricas para decisões baseadas em dados reais.",
-                  color: "primary"
+                  title: "Relatórios e Análises",
+                  description: "Acompanhe métricas importantes como taxa de comparecimento, faturamento e desempenho mensal.",
+                  image: analyticsDashboard,
+                  color: "primary",
+                  features: ["Dashboards completos", "Métricas em tempo real", "Exportação de dados"]
                 }
               ].map((feature, i) => (
                 <Card 
                   key={i}
-                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group"
+                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group overflow-hidden"
                   style={{ animationDelay: `${i * 0.1}s` }}
                 >
-                  <CardHeader className="space-y-4">
-                    <div className={`h-14 w-14 rounded-2xl bg-gradient-${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={feature.image} 
+                      alt={feature.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-60" />
+                    <div className={`absolute top-4 right-4 h-14 w-14 rounded-2xl bg-gradient-${feature.color} flex items-center justify-center shadow-lg`}>
                       <feature.icon className="h-7 w-7 text-white" />
                     </div>
-                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
+                  </div>
+                  <CardHeader className="space-y-4">
+                    <CardTitle className="text-2xl text-foreground">{feature.title}</CardTitle>
                     <CardDescription className="text-base leading-relaxed text-muted-foreground">
                       {feature.description}
                     </CardDescription>
+                    <ul className="space-y-2 pt-2">
+                      {feature.features.map((item, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-accent flex-shrink-0" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </CardHeader>
                 </Card>
               ))}
@@ -153,13 +176,13 @@ const Index = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="space-y-4">
                   <h2 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                    Feito para{" "}
+                    Construído para{" "}
                     <span className="bg-gradient-primary bg-clip-text text-transparent">
-                      Profissionais
+                      Crescer com Você
                     </span>
                   </h2>
                   <p className="text-lg text-muted-foreground">
-                    Ferramentas que crescem com você, desde o primeiro cliente até centenas
+                    Do primeiro cliente ao sucesso consolidado. Horix evolui com seu negócio.
                   </p>
                 </div>
                 
@@ -167,20 +190,20 @@ const Index = () => {
                   {[
                     {
                       icon: Zap,
-                      title: "Rápido e Simples",
-                      description: "Configure em minutos e comece a usar imediatamente",
+                      title: "Configure em Minutos",
+                      description: "Interface intuitiva que não requer treinamento. Comece a agendar em menos de 5 minutos.",
                       color: "accent"
                     },
                     {
                       icon: Shield,
-                      title: "Seguro e Confiável",
-                      description: "Seus dados protegidos com criptografia de ponta",
+                      title: "100% Seguro",
+                      description: "Seus dados e dos seus clientes protegidos com tecnologia de ponta e criptografia avançada.",
                       color: "primary"
                     },
                     {
-                      icon: Star,
-                      title: "Suporte Dedicado",
-                      description: "Estamos aqui para ajudar você a ter sucesso",
+                      icon: Users,
+                      title: "Gestão Completa de Clientes",
+                      description: "Cadastro detalhado, histórico de agendamentos e análise de comportamento em um só lugar.",
                       color: "accent"
                     }
                   ].map((benefit, i) => (
@@ -199,15 +222,13 @@ const Index = () => {
 
               <div className="relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
-                <div className="relative rounded-3xl border-2 border-border/50 bg-card/50 backdrop-blur-xl p-12 aspect-square flex flex-col items-center justify-center text-center space-y-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-xl opacity-50" />
-                    <Calendar className="relative h-32 w-32 text-primary float-animation" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl font-bold text-foreground">Sua Agenda Profissional</p>
-                    <p className="text-muted-foreground">Sempre organizada e acessível</p>
-                  </div>
+                <div className="relative rounded-3xl overflow-hidden border-2 border-border/50 shadow-2xl">
+                  <img 
+                    src={analyticsDashboard} 
+                    alt="Relatórios e análises do Horix" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
               </div>
             </div>
@@ -233,10 +254,11 @@ const Index = () => {
                     <CardTitle className="text-2xl text-foreground">Free</CardTitle>
                     <CardDescription className="text-muted-foreground">Perfeito para começar</CardDescription>
                   </div>
-                  <div>
+                  <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-bold text-foreground">R$ 0</span>
                     <span className="text-muted-foreground text-lg">/mês</span>
                   </div>
+                  <p className="text-sm text-accent font-semibold">Grátis para sempre</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
@@ -274,10 +296,11 @@ const Index = () => {
                     <CardTitle className="text-2xl text-foreground">Premium</CardTitle>
                     <CardDescription className="text-muted-foreground">Para profissionais sérios</CardDescription>
                   </div>
-                  <div>
+                  <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-bold text-foreground">R$ 29</span>
                     <span className="text-muted-foreground text-lg">/mês</span>
                   </div>
+                  <p className="text-sm text-accent font-semibold">Cancele quando quiser</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-3">
@@ -314,10 +337,10 @@ const Index = () => {
               <div className="relative rounded-3xl border-2 border-primary/30 bg-card/50 backdrop-blur-xl p-12 text-center space-y-8">
                 <div className="space-y-4">
                   <h2 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                    Pronto para Transformar<br />sua Agenda?
+                    Comece Agora e Transforme<br />Seu Negócio Hoje
                   </h2>
                   <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    Junte-se a centenas de profissionais que já otimizaram seu tempo
+                    Junte-se a centenas de profissionais que economizam 10+ horas por semana com o Horix
                   </p>
                 </div>
                 <Button 
