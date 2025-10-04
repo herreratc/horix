@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp, Users, MessageSquare, CalendarCheck } from "lucide-react";
+import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp, Users, MessageSquare, CalendarCheck, ChevronDown, Quote } from "lucide-react";
 import logo from "@/assets/logo.png";
 import dashboardReal from "@/assets/dashboard-real.png";
 import horariosReal from "@/assets/horarios-real.png";
@@ -89,6 +89,27 @@ const Index = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="px-4 py-16 bg-gradient-to-br from-primary/5 to-accent/5 border-y border-border/50">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { number: "500+", label: "Profissionais Ativos" },
+                { number: "10.000+", label: "Agendamentos Realizados" },
+                { number: "80%", label: "Redução em Faltas" },
+                { number: "4.8/5", label: "Avaliação Média" }
+              ].map((stat, i) => (
+                <div key={i} className="text-center animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                  <div className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-muted-foreground text-sm md:text-base">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -236,6 +257,42 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Target Audience Section */}
+        <section className="px-4 py-20 bg-gradient-to-br from-accent/5 to-primary/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center space-y-4 mb-16 animate-fade-in">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Quem Usa o Horix?</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Profissionais de diversas áreas confiam no Horix para gerenciar seus agendamentos
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {[
+                { icon: "💇", title: "Barbeiros", subtitle: "Salões & Barbearias" },
+                { icon: "🏥", title: "Médicos", subtitle: "Clínicas & Consultórios" },
+                { icon: "💆", title: "Terapeutas", subtitle: "Massagem & Estética" },
+                { icon: "💪", title: "Personal Trainers", subtitle: "Fitness & Saúde" },
+                { icon: "🎓", title: "Professores", subtitle: "Aulas Particulares" }
+              ].map((audience, i) => (
+                <Card 
+                  key={i}
+                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 text-center"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <CardHeader className="space-y-3">
+                    <div className="text-5xl mx-auto">{audience.icon}</div>
+                    <CardTitle className="text-lg text-foreground">{audience.title}</CardTitle>
+                    <CardDescription className="text-sm text-muted-foreground">
+                      {audience.subtitle}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Pricing Section */}
         <section className="px-4 py-20">
           <div className="max-w-6xl mx-auto">
@@ -244,10 +301,52 @@ const Index = () => {
                 <TrendingUp className="h-3 w-3 text-accent" />
                 <span className="text-xs font-medium text-foreground">Preços</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Planos Transparentes</h2>
-              <p className="text-muted-foreground text-lg">Comece grátis. Escale quando precisar.</p>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Planos para Cada Necessidade</h2>
+              <p className="text-muted-foreground text-lg">Comece grátis. Cresça com o Premium. Cancele quando quiser.</p>
             </div>
             
+            {/* Comparison Table */}
+            <div className="mb-12">
+              <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left p-4 md:p-6 text-foreground font-semibold">Recursos</th>
+                          <th className="text-center p-4 md:p-6 text-foreground font-semibold">Free</th>
+                          <th className="text-center p-4 md:p-6 bg-primary/5">
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="text-foreground font-semibold">Premium</span>
+                              <span className="text-xs text-accent">Mais Popular</span>
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { feature: "Agendamentos mensais", free: "30", premium: "Ilimitados" },
+                          { feature: "Gerenciamento de clientes", free: "✓", premium: "✓" },
+                          { feature: "Link público de agendamento", free: "✓", premium: "✓" },
+                          { feature: "Calendário completo", free: "✓", premium: "✓" },
+                          { feature: "Lembretes via WhatsApp", free: "✗", premium: "✓" },
+                          { feature: "Relatórios avançados", free: "Básico", premium: "Completo" },
+                          { feature: "Suporte", free: "Comunidade", premium: "Prioritário" },
+                          { feature: "Exportação de dados", free: "✗", premium: "✓" }
+                        ].map((row, i) => (
+                          <tr key={i} className="border-b border-border/50 last:border-0">
+                            <td className="p-4 md:p-6 text-muted-foreground">{row.feature}</td>
+                            <td className="p-4 md:p-6 text-center text-foreground">{row.free}</td>
+                            <td className="p-4 md:p-6 text-center text-foreground bg-primary/5 font-semibold">{row.premium}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
                 <CardHeader className="space-y-4">
@@ -330,6 +429,125 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Testimonials Section */}
+        <section className="px-4 py-20 bg-gradient-to-br from-primary/5 to-accent/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center space-y-4 mb-16 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 backdrop-blur-sm">
+                <Star className="h-3 w-3 text-accent fill-accent" />
+                <span className="text-xs font-medium text-foreground">Depoimentos</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">O Que Nossos Clientes Dizem</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Histórias reais de profissionais que transformaram seus negócios
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  name: "Carlos Silva",
+                  role: "Barbeiro - São Paulo",
+                  content: "Reduzi em 70% as faltas dos meus clientes com os lembretes automáticos. Minha agenda nunca esteve tão organizada!",
+                  rating: 5
+                },
+                {
+                  name: "Dra. Ana Costa",
+                  role: "Psicóloga - Rio de Janeiro",
+                  content: "O Horix me deu mais tempo para focar nos meus pacientes. A gestão de agendamentos ficou 100% automatizada.",
+                  rating: 5
+                },
+                {
+                  name: "Pedro Martins",
+                  role: "Personal Trainer - Brasília",
+                  content: "Aumentei meu faturamento em 40% porque consigo gerenciar muito mais alunos sem perder controle.",
+                  rating: 5
+                }
+              ].map((testimonial, i) => (
+                <Card 
+                  key={i}
+                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <CardHeader className="space-y-4">
+                    <Quote className="h-10 w-10 text-primary/30" />
+                    <div className="flex gap-1">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 text-accent fill-accent" />
+                      ))}
+                    </div>
+                    <CardDescription className="text-base leading-relaxed text-foreground italic">
+                      "{testimonial.content}"
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-1">
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="px-4 py-20">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center space-y-4 mb-16 animate-fade-in">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">Perguntas Frequentes</h2>
+              <p className="text-muted-foreground text-lg">
+                Tire suas dúvidas sobre o Horix
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              {[
+                {
+                  question: "Como funciona o plano gratuito?",
+                  answer: "O plano Free permite até 30 agendamentos por mês, com acesso ao calendário, gerenciamento de clientes e link público de agendamento. É grátis para sempre, sem necessidade de cartão de crédito."
+                },
+                {
+                  question: "Preciso de conhecimento técnico para usar?",
+                  answer: "Não! O Horix foi desenvolvido para ser extremamente intuitivo. Você configura tudo em menos de 5 minutos e começa a agendar imediatamente."
+                },
+                {
+                  question: "Como funcionam os lembretes automáticos?",
+                  answer: "Com o plano Premium, você pode enviar lembretes automáticos via WhatsApp para seus clientes antes dos agendamentos. Isso reduz faltas em até 80% e economiza seu tempo."
+                },
+                {
+                  question: "Posso cancelar o Premium a qualquer momento?",
+                  answer: "Sim! Não há fidelidade. Você pode cancelar quando quiser e continuar usando o plano Free normalmente."
+                },
+                {
+                  question: "Meus dados estão seguros?",
+                  answer: "Absolutamente. Utilizamos criptografia de ponta e seguimos as melhores práticas de segurança para proteger seus dados e os de seus clientes."
+                },
+                {
+                  question: "Como funciona o link público de agendamento?",
+                  answer: "Você recebe um link único que pode compartilhar com seus clientes. Eles acessam, escolhem o serviço, data e horário disponível, e pronto! O agendamento cai direto na sua agenda."
+                }
+              ].map((faq, i) => (
+                <Card 
+                  key={i}
+                  className="border-2 border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300"
+                >
+                  <CardHeader>
+                    <CardTitle className="text-lg text-foreground flex items-start justify-between gap-4">
+                      <span>{faq.question}</span>
+                      <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-1" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="px-4 py-20">
           <div className="max-w-4xl mx-auto">
@@ -338,11 +556,15 @@ const Index = () => {
               <div className="relative rounded-3xl border-2 border-primary/30 bg-card/50 backdrop-blur-xl p-12 text-center space-y-8">
                 <div className="space-y-4">
                   <h2 className="text-4xl md:text-5xl font-bold leading-tight text-foreground">
-                    Comece Agora e Transforme<br />Seu Negócio Hoje
+                    Comece Grátis Hoje Mesmo
                   </h2>
                   <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    Junte-se a centenas de profissionais que economizam 10+ horas por semana com o Horix
+                    Cadastre-se em menos de 2 minutos e transforme a gestão do seu negócio
                   </p>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30">
+                    <Shield className="h-4 w-4 text-accent" />
+                    <span className="text-sm font-medium text-foreground">Grátis para sempre • Sem cartão de crédito</span>
+                  </div>
                 </div>
                 <Button 
                   size="lg" 
