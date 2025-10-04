@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp, Users, MessageSquare, CalendarCheck } from "lucide-react";
 import logo from "@/assets/logo.png";
-import heroDashboard from "@/assets/hero-dashboard.jpg";
-import whatsappReminder from "@/assets/whatsapp-reminder.jpg";
-import analyticsDashboard from "@/assets/analytics-dashboard.jpg";
+import dashboardReal from "@/assets/dashboard-real.png";
+import horariosReal from "@/assets/horarios-real.png";
+import onboardingReal from "@/assets/onboarding-real.png";
+import relatoriosReal from "@/assets/relatorios-real.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -81,8 +82,8 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-20" />
                 <div className="relative rounded-3xl overflow-hidden border-2 border-border/50 shadow-2xl">
                   <img 
-                    src={heroDashboard} 
-                    alt="Dashboard do Horix mostrando agenda e agendamentos" 
+                    src={dashboardReal} 
+                    alt="Dashboard do Horix mostrando estatísticas e agendamentos" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -112,25 +113,25 @@ const Index = () => {
                   icon: CalendarCheck,
                   title: "Agendamento Simplificado",
                   description: "Crie e gerencie agendamentos em segundos. Seus clientes também podem agendar diretamente pelo link público.",
-                  image: heroDashboard,
+                  image: dashboardReal,
                   color: "primary",
                   features: ["Interface intuitiva", "Link público de agendamento", "Visualização em calendário"]
                 },
                 {
-                  icon: MessageSquare,
-                  title: "Lembretes Automáticos",
-                  description: "Envie lembretes via WhatsApp automaticamente. Reduza faltas em até 80% sem esforço manual.",
-                  image: whatsappReminder,
+                  icon: Clock,
+                  title: "Horários Flexíveis",
+                  description: "Configure seus horários de atendimento por dia da semana. Total controle sobre sua disponibilidade.",
+                  image: horariosReal,
                   color: "accent",
-                  features: ["WhatsApp integrado", "Envio automático", "Personalização de mensagens"]
+                  features: ["Configuração por dia", "Horários personalizados", "Gestão de disponibilidade"]
                 },
                 {
                   icon: BarChart3,
                   title: "Relatórios e Análises",
                   description: "Acompanhe métricas importantes como taxa de comparecimento, faturamento e desempenho mensal.",
-                  image: analyticsDashboard,
+                  image: relatoriosReal,
                   color: "primary",
-                  features: ["Dashboards completos", "Métricas em tempo real", "Exportação de dados"]
+                  features: ["Dashboards completos", "Métricas em tempo real", "Insights inteligentes"]
                 }
               ].map((feature, i) => (
                 <Card 
@@ -224,8 +225,8 @@ const Index = () => {
                 <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
                 <div className="relative rounded-3xl overflow-hidden border-2 border-border/50 shadow-2xl">
                   <img 
-                    src={analyticsDashboard} 
-                    alt="Relatórios e análises do Horix" 
+                    src={onboardingReal} 
+                    alt="Primeiros passos no Horix - Configure em 3 passos simples" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
