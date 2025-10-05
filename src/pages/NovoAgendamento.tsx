@@ -6,9 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import PaywallModal from "@/components/PaywallModal";
+import { RecorrenciaDialog } from "@/components/RecorrenciaDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { addDays, addWeeks, addMonths, isBefore } from "date-fns";
 
 interface Cliente {
   id: string;
@@ -21,6 +24,7 @@ export default function NovoAgendamento() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showRecorrencia, setShowRecorrencia] = useState(false);
 
   const [clienteId, setClienteId] = useState("");
   const [data, setData] = useState("");
@@ -29,6 +33,9 @@ export default function NovoAgendamento() {
   const [servico, setServico] = useState("");
   const [valor, setValor] = useState("");
   const [canalLembrete, setCanalLembrete] = useState("email");
+  const [isRecorrente, setIsRecorrente] = useState(false);
+  const [frequenciaRecorrencia, setFrequenciaRecorrencia] = useState("");
+  const [dataFimRecorrencia, setDataFimRecorrencia] = useState<Date>();
 
   useEffect(() => {
     checkAuth();
@@ -68,6 +75,47 @@ export default function NovoAgendamento() {
     } else {
       setClientes(data || []);
     }
+  };
+
+  const criarAgendamentosRecorrentes = async (
+    agendamentoBase: any,
+    frequencia: string,
+    dataFim: Date,
+    agendamentoPaiId: string
+  ) => {
+    const agendamentosRecorrentes = [];
+    let dataAtual = new Date(data);
+    
+    while (isBefore(dataAtual, dataFim)) {
+      if (frequencia === "semanal") {
+        dataAtual = addWeeks(dataAtual, 1);
+      } else if (frequencia === "quinzenal") {
+        dataAtual = addWeeks(dataAtual, 2);
+      } else if (frequencia === "mensal") {
+        dataAtual = addMonths(dataAtual, 1);
+      }
+      
+      if (isBefore(dataAtual, dataFim)) {
+        agendamentosRecorrentes.push({
+          ...agendamentoBase,
+          data: dataAtual.toISOString().split('T')[0],
+          recorrente: true,
+          frequencia_recorrencia: frequencia,
+          data_fim_recorrencia: dataFim.toISOString().split('T')[0],
+          agendamento_pai_id: agendamentoPaiId,
+        });
+      }
+    }
+    
+    if (agendamentosRecorrentes.length > 0) {
+      const { error } = await supabase
+        .from("agendamentos")
+        .insert(agendamentosRecorrentes);
+        
+      if (error) throw error;
+    }
+    
+    return agendamentosRecorrentes.length;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,6 +166,9 @@ export default function NovoAgendamento() {
         valor: valor ? parseFloat(valor) : null,
         canal_lembrete: canalLembrete,
         status: "agendado",
+        recorrente: isRecorrente,
+        frequencia_recorrencia: isRecorrente ? frequenciaRecorrencia : null,
+        data_fim_recorrencia: isRecorrente && dataFimRecorrencia ? dataFimRecorrencia.toISOString().split('T')[0] : null,
       };
 
       const { data: novoAgendamento, error } = await supabase
@@ -134,7 +185,19 @@ export default function NovoAgendamento() {
 
       if (error) throw error;
 
+      // Criar agendamentos recorrentes se configurado
+      let totalRecorrentes = 0;
+      if (isRecorrente && dataFimRecorrencia && novoAgendamento) {
+        totalRecorrentes = await criarAgendamentosRecorrentes(
+          agendamentoData,
+          frequenciaRecorrencia,
+          dataFimRecorrencia,
+          novoAgendamento.id
+        );
+      }
+
       // Update monthly counter
+      const totalAgendamentos = 1 + totalRecorrentes;
       if (profile) {
         await supabase
           .from("profiles")
@@ -235,6 +298,16 @@ Qualquer dúvida, estou à disposição! 😊`;
         onOpenChange={setShowPaywall}
         agendamentosUsados={profile?.agendamentos_mes || 0}
         limite={30}
+      />
+
+      <RecorrenciaDialog
+        open={showRecorrencia}
+        onOpenChange={setShowRecorrencia}
+        onConfirm={(freq, dataFim) => {
+          setFrequenciaRecorrencia(freq);
+          setDataFimRecorrencia(dataFim);
+          setIsRecorrente(true);
+        }}
       />
 
       <div className="min-h-screen p-4 md:p-8">
@@ -375,6 +448,34 @@ Qualquer dúvida, estou à disposição! 😊`;
                     </p>
                   )}
                 </div>
+
+                <div className="flex items-center space-x-2 pt-4 border-t">
+                  <Checkbox
+                    id="recorrente"
+                    checked={isRecorrente}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setShowRecorrencia(true);
+                      } else {
+                        setIsRecorrente(false);
+                        setFrequenciaRecorrencia("");
+                        setDataFimRecorrencia(undefined);
+                      }
+                    }}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="recorrente" className="cursor-pointer">
+                      Agendamento Recorrente
+                    </Label>
+                    <Repeat className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </div>
+                {isRecorrente && frequenciaRecorrencia && (
+                  <p className="text-sm text-muted-foreground">
+                    📅 {frequenciaRecorrencia.charAt(0).toUpperCase() + frequenciaRecorrencia.slice(1)} até{" "}
+                    {dataFimRecorrencia?.toLocaleDateString("pt-BR")}
+                  </p>
+                )}
 
                 <div className="flex gap-4 pt-4">
                   <Button

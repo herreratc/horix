@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { DashboardFinanceiro } from "@/components/DashboardFinanceiro";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function Dashboard() {
     faturamento: 0
   });
   const [todayAppointments, setTodayAppointments] = useState<any[]>([]);
+  const [allAgendamentos, setAllAgendamentos] = useState<any[]>([]);
   const [weeklyData, setWeeklyData] = useState<any[]>([]);
   const [statusData, setStatusData] = useState<any[]>([]);
   const [insights, setInsights] = useState<string[]>([]);
@@ -44,6 +46,7 @@ export default function Dashboard() {
     loadProfile(user.id);
     loadStats(user.id);
     loadTodayAppointments(user.id);
+    loadAllAgendamentos(user.id);
     loadWeeklyData(user.id);
     loadStatusData(user.id);
     generateInsights(user.id);
@@ -176,6 +179,15 @@ export default function Dashboard() {
       .order("hora", { ascending: true });
 
     setTodayAppointments(data || []);
+  };
+
+  const loadAllAgendamentos = async (userId: string) => {
+    const { data } = await supabase
+      .from("agendamentos")
+      .select("id, data, valor, status")
+      .eq("user_id", userId);
+
+    setAllAgendamentos(data || []);
   };
 
   const loadWeeklyData = async (userId: string) => {
@@ -392,6 +404,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Dashboard Financeiro */}
+        <DashboardFinanceiro agendamentos={allAgendamentos} />
 
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

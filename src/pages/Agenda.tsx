@@ -11,6 +11,7 @@ import LembreteButton from "@/components/LembreteButton";
 import LembretesAutomaticos from "@/components/LembretesAutomaticos";
 import CancelarAgendamentoButton from "@/components/CancelarAgendamentoButton";
 import LembretesHoje from "@/components/LembretesHoje";
+import { AgendamentoFilters } from "@/components/AgendamentoFilters";
 
 interface Agendamento {
   id: string;
@@ -30,13 +31,24 @@ interface Cliente {
   nome: string;
 }
 
+interface Servico {
+  id: string;
+  nome: string;
+}
+
 export default function Agenda() {
   const navigate = useNavigate();
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [servicos, setServicos] = useState<Servico[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Filtros
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("todos");
+  const [servicoFilter, setServicoFilter] = useState("todos");
 
   useEffect(() => {
     checkAuth();
@@ -83,6 +95,17 @@ export default function Agenda() {
       setClientes(clientData || []);
     }
 
+    // Load servicos
+    const { data: servicoData, error: servicoError } = await supabase
+      .from("servicos")
+      .select("id, nome");
+
+    if (servicoError) {
+      toast.error("Erro ao carregar serviços");
+    } else {
+      setServicos(servicoData || []);
+    }
+
     setLoading(false);
   };
 
@@ -92,7 +115,24 @@ export default function Agenda() {
   };
 
   const getAgendamentosForDate = (date: Date) => {
-    return agendamentos.filter(a => isSameDay(new Date(a.data), date));
+    let filtered = agendamentos.filter(a => isSameDay(new Date(a.data), date));
+    
+    // Aplicar filtros
+    if (searchTerm) {
+      filtered = filtered.filter(a => 
+        a.clientes?.nome.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (statusFilter !== "todos") {
+      filtered = filtered.filter(a => a.status === statusFilter);
+    }
+    
+    if (servicoFilter !== "todos") {
+      filtered = filtered.filter(a => a.servico === servicos.find(s => s.id === servicoFilter)?.nome);
+    }
+    
+    return filtered;
   };
 
   const monthStart = startOfMonth(currentMonth);
@@ -136,6 +176,17 @@ export default function Agenda() {
 
         {/* Lembretes Pendentes */}
         <LembretesHoje />
+
+        {/* Filtros */}
+        <AgendamentoFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          servicoFilter={servicoFilter}
+          onServicoChange={setServicoFilter}
+          servicos={servicos}
+        />
 
         <div className="grid md:grid-cols-3 gap-6">
           {/* Calendar */}
