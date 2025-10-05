@@ -179,6 +179,45 @@ export type Database = {
         }
         Relationships: []
       }
+      lista_espera: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          data: string
+          hora_preferencia: string | null
+          id: string
+          observacoes: string | null
+          servico: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          data: string
+          hora_preferencia?: string | null
+          id?: string
+          observacoes?: string | null
+          servico?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          data?: string
+          hora_preferencia?: string | null
+          id?: string
+          observacoes?: string | null
+          servico?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       log_notificacoes: {
         Row: {
           agendamento_id: string
@@ -292,6 +331,39 @@ export type Database = {
           updated_at?: string
           user_id?: string
           valor?: number | null
+        }
+        Relationships: []
+      }
+      templates_mensagens: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          mensagem: string
+          nome: string
+          tipo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          mensagem: string
+          nome: string
+          tipo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          mensagem?: string
+          nome?: string
+          tipo?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
