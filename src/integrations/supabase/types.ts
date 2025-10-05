@@ -458,6 +458,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_dashboard_stats: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       get_public_profile: {
         Args: { profile_id: string }
         Returns: {
