@@ -22,6 +22,8 @@ interface Profile {
   profissao: string;
   horario_inicio: string;
   horario_fim: string;
+  nome?: string;
+  whatsapp?: string;
 }
 
 interface HorarioDisponivel {
@@ -60,7 +62,7 @@ export default function AgendamentoPublico() {
     // Load professional profile
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .select("profissao, horario_inicio, horario_fim")
+      .select("profissao, horario_inicio, horario_fim, nome, whatsapp")
       .eq("id", userId)
       .single();
 
@@ -263,6 +265,46 @@ export default function AgendamentoPublico() {
                 </div>
               </div>
 
+              {/* Client and Professional Info */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-primary mb-2">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm font-semibold uppercase tracking-wider">Seus Dados</span>
+                  </div>
+                  <p className="font-medium text-foreground">{nome}</p>
+                  {email && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-3 w-3" />
+                      {email}
+                    </div>
+                  )}
+                  {whatsapp && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-3 w-3" />
+                      {whatsapp}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-primary mb-2">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm font-semibold uppercase tracking-wider">Profissional</span>
+                  </div>
+                  {profile?.nome && <p className="font-medium text-foreground">{profile.nome}</p>}
+                  {profile?.profissao && profile.profissao !== 'completed_onboarding' && (
+                    <p className="text-sm text-muted-foreground">{profile.profissao}</p>
+                  )}
+                  {profile?.whatsapp && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-3 w-3" />
+                      {profile.whatsapp}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Next Steps */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
@@ -276,13 +318,25 @@ export default function AgendamentoPublico() {
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+                    <span>Compareça com 5 minutos de antecedência</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                     <span>Em caso de imprevistos, entre em contato com antecedência</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                    <span>Aguarde a confirmação por email ou WhatsApp</span>
+                    <span>Salve este comprovante para referência futura</span>
                   </li>
                 </ul>
+              </div>
+
+              {/* Important Notice */}
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                <p className="text-sm text-center text-foreground">
+                  <span className="font-semibold">Importante:</span> Guarde este comprovante. 
+                  {email && " Você também receberá uma confirmação por email."}
+                </p>
               </div>
 
               {/* Footer */}
