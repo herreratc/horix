@@ -145,14 +145,14 @@ const Index = () => {
             ].map((feature, i) => (
               <Card
                 key={i}
-                className="border-2 hover:border-primary/50 transition-all hover:shadow-xl hover:-translate-y-1 group"
+                className="border-2 hover:border-primary/50 transition-all hover:shadow-xl hover:-translate-y-1 group bg-card"
               >
                 <CardHeader>
                   <div className={`h-14 w-14 rounded-2xl bg-gradient-${feature.color} flex items-center justify-center mb-4`}>
-                    <feature.icon className="h-7 w-7 text-white" />
+                    <feature.icon className="h-7 w-7 text-primary-foreground" />
                   </div>
-                  <CardTitle className="text-2xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base leading-relaxed">
+                  <CardTitle className="text-2xl text-card-foreground">{feature.title}</CardTitle>
+                  <CardDescription className="text-base leading-relaxed text-muted-foreground">
                     {feature.desc}
                   </CardDescription>
                 </CardHeader>
