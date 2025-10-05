@@ -390,7 +390,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Sparkles className="h-6 w-6 text-white" />
+                  <Sparkles className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div className="flex-1 space-y-2">
                   <h3 className="font-bold text-lg text-foreground">Insights do Dia</h3>
@@ -448,7 +448,7 @@ export default function Dashboard() {
                   {stat.title}
                 </CardTitle>
                 <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                  <stat.icon className="h-6 w-6 text-white" />
+                  <stat.icon className="h-6 w-6 text-primary-foreground" />
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
@@ -474,7 +474,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-12 w-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-lg">
-                        <Sparkles className="h-6 w-6 text-white" />
+                        <Sparkles className="h-6 w-6 text-primary-foreground" />
                       </div>
                       <div>
                         <p className="font-bold text-lg text-foreground">Plano Free</p>
@@ -516,7 +516,7 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Share2 className="h-6 w-6 text-white" />
+                  <Share2 className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold mb-1 text-foreground">Link de Agendamento</h3>

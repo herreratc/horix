@@ -238,11 +238,11 @@ export default function AgendamentoPublico() {
           <Card className="border-2 border-primary/20 shadow-2xl overflow-hidden">
             {/* Success Banner */}
             <div className="bg-gradient-primary p-8 text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm mb-4 animate-scale-in">
-                <CheckCircle className="h-14 w-14 text-white" />
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary-foreground/20 backdrop-blur-sm mb-4 animate-scale-in">
+                <CheckCircle className="h-14 w-14 text-primary-foreground" />
               </div>
-              <h2 className="text-3xl font-bold text-white mb-2">Agendamento Confirmado!</h2>
-              <div className="flex items-center justify-center gap-2 text-white/90">
+              <h2 className="text-3xl font-bold text-primary-foreground mb-2">Agendamento Confirmado!</h2>
+              <div className="flex items-center justify-center gap-2 text-primary-foreground/90">
                 <Sparkles className="h-5 w-5" />
                 <span className="text-lg">Tudo certo para o seu atendimento</span>
               </div>
@@ -386,7 +386,7 @@ export default function AgendamentoPublico() {
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-md">
-                  <User className="h-5 w-5 text-white" />
+                  <User className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">Suas Informações</CardTitle>
@@ -448,7 +448,7 @@ export default function AgendamentoPublico() {
             <CardHeader className="bg-gradient-to-r from-accent/5 to-primary/5">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-gradient-accent flex items-center justify-center shadow-md">
-                  <Calendar className="h-5 w-5 text-white" />
+                  <Calendar className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">Escolha Data e Horário</CardTitle>

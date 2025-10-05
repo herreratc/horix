@@ -137,13 +137,13 @@ export default function Auth() {
               <TabsList className="grid w-full grid-cols-2 p-1 bg-muted/50">
                 <TabsTrigger 
                   value="signin"
-                  className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white"
+                  className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground"
                 >
                   Entrar
                 </TabsTrigger>
                 <TabsTrigger 
                   value="signup"
-                  className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white"
+                  className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground"
                 >
                   Criar Conta
                 </TabsTrigger>

@@ -103,12 +103,12 @@ const Planos = () => {
 
             {/* Plano Premium */}
             <Card className="relative border-primary shadow-2xl md:scale-105">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-primary text-white text-sm font-bold rounded-full shadow-lg">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg">
                 MAIS POPULAR
               </div>
               <CardHeader className="text-center space-y-4">
                 <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-primary flex items-center justify-center">
-                  <Crown className="h-8 w-8 text-white" />
+                  <Crown className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <CardTitle className="text-3xl">Premium</CardTitle>
                 <div>

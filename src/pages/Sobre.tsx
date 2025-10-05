@@ -129,7 +129,7 @@ const Sobre = () => {
             <Card className="border-2">
               <CardHeader>
                 <div className="h-14 w-14 rounded-2xl bg-gradient-primary flex items-center justify-center mb-4">
-                  <Target className="h-7 w-7 text-white" />
+                  <Target className="h-7 w-7 text-primary-foreground" />
                 </div>
                 <CardTitle className="text-2xl">Nossa Missão</CardTitle>
               </CardHeader>

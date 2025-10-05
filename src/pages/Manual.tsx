@@ -47,7 +47,7 @@ export default function Manual() {
               <Card className="border-2">
                 <CardContent className="pt-6 space-y-3">
                   <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center mx-auto">
-                    <Settings className="h-6 w-6 text-white" />
+                    <Settings className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <h3 className="font-bold text-center">1. Configure seu Perfil</h3>
                   <p className="text-sm text-muted-foreground text-center">
@@ -62,7 +62,7 @@ export default function Manual() {
               <Card className="border-2">
                 <CardContent className="pt-6 space-y-3">
                   <div className="h-12 w-12 rounded-xl bg-gradient-accent flex items-center justify-center mx-auto">
-                    <Briefcase className="h-6 w-6 text-white" />
+                    <Briefcase className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <h3 className="font-bold text-center">2. Crie seus Serviços</h3>
                   <p className="text-sm text-muted-foreground text-center">
@@ -77,7 +77,7 @@ export default function Manual() {
               <Card className="border-2">
                 <CardContent className="pt-6 space-y-3">
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mx-auto">
-                    <Calendar className="h-6 w-6 text-white" />
+                    <Calendar className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <h3 className="font-bold text-center">3. Comece a Agendar</h3>
                   <p className="text-sm text-muted-foreground text-center">

@@ -211,7 +211,7 @@ const Index = () => {
                 className={`relative ${plan.popular ? "border-primary shadow-2xl scale-105" : "border-2"}`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-primary text-white text-sm font-medium rounded-full">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-primary text-primary-foreground text-sm font-medium rounded-full">
                     Mais Popular
                   </div>
                 )}

@@ -72,7 +72,7 @@ export const OnboardingTour = ({ isOpen, onClose }: OnboardingTourProps) => {
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
           <CardContent className="p-6 space-y-6">
             <div className="h-20 w-20 rounded-2xl bg-gradient-primary flex items-center justify-center mx-auto shadow-lg">
-              <Icon className="h-10 w-10 text-white" />
+              <Icon className="h-10 w-10 text-primary-foreground" />
             </div>
 
             <div className="text-center space-y-3">
