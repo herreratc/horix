@@ -263,8 +263,18 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t py-12 px-4">
-        <div className="max-w-7xl mx-auto text-center text-muted-foreground">
-          <p>© 2025 Horix. Todos os direitos reservados.</p>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-muted-foreground">© 2025 Horix. Todos os direitos reservados.</p>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+              <button onClick={() => navigate("/termos")} className="hover:text-foreground transition-colors">
+                Termos de Uso
+              </button>
+              <button onClick={() => navigate("/privacidade")} className="hover:text-foreground transition-colors">
+                Política de Privacidade
+              </button>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, TrendingUp, DollarSign, Users, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ExportRelatorio } from "@/components/ExportRelatorio";
 
 interface Stats {
   totalAgendamentos: number;
@@ -19,6 +20,7 @@ interface Stats {
 export default function Relatorios() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [allAgendamentos, setAllAgendamentos] = useState<any[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalAgendamentos: 0,
     confirmados: 0,
@@ -44,13 +46,30 @@ export default function Relatorios() {
   const loadStats = async () => {
     setLoading(true);
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const monthStart = format(startOfMonth(currentMonth), "yyyy-MM-dd");
     const monthEnd = format(endOfMonth(currentMonth), "yyyy-MM-dd");
+
+    // Load all agendamentos for export
+    const { data: agendamentos } = await supabase
+      .from("agendamentos")
+      .select(`
+        *,
+        clientes (nome)
+      `)
+      .eq("user_id", user.id)
+      .gte("data", monthStart)
+      .lte("data", monthEnd);
+
+    setAllAgendamentos(agendamentos || []);
 
     // Total agendamentos do mês
     const { count: total } = await supabase
       .from("agendamentos")
       .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
       .gte("data", monthStart)
       .lte("data", monthEnd);
 
@@ -126,16 +145,23 @@ export default function Relatorios() {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Relatórios</h1>
-            <p className="text-muted-foreground capitalize">
-              {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Relatórios</h1>
+              <p className="text-muted-foreground capitalize">
+                {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+              </p>
+            </div>
           </div>
+          <ExportRelatorio 
+            data={allAgendamentos}
+            filename={`relatorio-${format(currentMonth, "yyyy-MM")}`}
+            type="agendamentos"
+          />
         </div>
 
         {/* Main Stats */}

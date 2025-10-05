@@ -23,6 +23,8 @@ import Manual from "./pages/Manual";
 import Templates from "./pages/Templates";
 import Planos from "./pages/Planos";
 import Sobre from "./pages/Sobre";
+import Termos from "./pages/Termos";
+import Privacidade from "./pages/Privacidade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,8 @@ const App = () => (
           <Route path="/manual" element={<Manual />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/sobre" element={<Sobre />} />
+          <Route path="/termos" element={<Termos />} />
+          <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/agendamento/:userId" element={<AgendamentoPublico />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -6,16 +6,28 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Crown, Calendar, CreditCard, AlertCircle, ArrowLeft } from "lucide-react";
+import { Crown, Calendar, CreditCard, AlertCircle, ArrowLeft, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PremiumBadge } from "@/components/PremiumBadge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function GerenciarAssinatura() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [premiumAccess, setPremiumAccess] = useState<any>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
     loadProfileData();
@@ -61,6 +73,43 @@ export default function GerenciarAssinatura() {
 
   const handleUpgrade = () => {
     navigate("/assinatura");
+  };
+
+  const handleCancelSubscription = async () => {
+    setCanceling(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Update subscription status to cancelled
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          subscription_status: 'cancelled',
+          plano: 'free'
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Assinatura cancelada",
+        description: "Sua assinatura foi cancelada com sucesso. Você ainda terá acesso até o final do período pago.",
+      });
+
+      // Reload data
+      await loadProfileData();
+      setShowCancelDialog(false);
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      toast({
+        title: "Erro ao cancelar",
+        description: "Não foi possível cancelar a assinatura. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setCanceling(false);
+    }
   };
 
   if (loading) {
@@ -192,6 +241,19 @@ export default function GerenciarAssinatura() {
                 </div>
               )}
             </div>
+
+            {isPremiumActive && (
+              <div className="pt-4 border-t">
+                <Button
+                  variant="outline"
+                  className="w-full text-destructive hover:bg-destructive/10 gap-2"
+                  onClick={() => setShowCancelDialog(true)}
+                >
+                  <XCircle className="w-4 h-4" />
+                  Cancelar Assinatura
+                </Button>
+              </div>
+            )}
           </Card>
         )}
 
@@ -227,6 +289,37 @@ export default function GerenciarAssinatura() {
             </li>
           </ul>
         </Card>
+
+        {/* Cancel Dialog */}
+        <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancelar Assinatura Premium?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Você perderá acesso aos seguintes recursos:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Agendamentos ilimitados</li>
+                  <li>Lembretes automáticos via WhatsApp</li>
+                  <li>Relatórios avançados</li>
+                  <li>Suporte prioritário</li>
+                </ul>
+                <p className="mt-4 font-semibold">
+                  Você ainda terá acesso até {formatDate(profile?.subscription_current_period_end)}
+                </p>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Manter Premium</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleCancelSubscription}
+                disabled={canceling}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {canceling ? "Cancelando..." : "Sim, Cancelar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DashboardLayout>
   );
