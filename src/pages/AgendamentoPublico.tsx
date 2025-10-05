@@ -72,13 +72,16 @@ export default function AgendamentoPublico() {
 
     setProfile(profileData);
 
-    // Load available times for next 7 days
+    // Load available times for next 7 days (excluding past dates)
     const proximos7Dias: HorarioDisponivel[] = [];
     const hoje = startOfDay(new Date());
 
     for (let i = 0; i < 7; i++) {
       const dia = addDays(hoje, i);
       const dataStr = format(dia, "yyyy-MM-dd");
+
+      // Skip dates before today
+      if (dia < hoje) continue;
 
       // Get existing appointments for this day
       const { data: agendamentos } = await supabase
@@ -310,7 +313,9 @@ export default function AgendamentoPublico() {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground">
               Agende seu <span className="text-primary">Horário</span>
             </h1>
-            <p className="text-lg text-muted-foreground">{profile.profissao}</p>
+            {profile.profissao && profile.profissao !== 'completed_onboarding' && (
+              <p className="text-lg text-muted-foreground">{profile.profissao}</p>
+            )}
           </div>
         </div>
 
