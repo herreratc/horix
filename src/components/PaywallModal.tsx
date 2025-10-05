@@ -15,9 +15,18 @@ interface PaywallModalProps {
   onOpenChange: (open: boolean) => void;
   agendamentosUsados: number;
   limite: number;
+  isInTrial?: boolean;
+  trialDaysLeft?: number;
 }
 
-export default function PaywallModal({ open, onOpenChange, agendamentosUsados, limite }: PaywallModalProps) {
+export default function PaywallModal({ 
+  open, 
+  onOpenChange, 
+  agendamentosUsados, 
+  limite,
+  isInTrial,
+  trialDaysLeft 
+}: PaywallModalProps) {
   const navigate = useNavigate();
 
   return (
@@ -30,11 +39,22 @@ export default function PaywallModal({ open, onOpenChange, agendamentosUsados, l
             </div>
           </div>
           <AlertDialogTitle className="text-2xl text-center">
-            Você atingiu o limite do plano gratuito! 🎯
+            {isInTrial 
+              ? `Trial terminado! Assine para continuar 🚀` 
+              : `Você atingiu o limite do plano gratuito! 🎯`}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center text-base">
-            Você já usou <strong>{agendamentosUsados}/{limite}</strong> agendamentos este mês.
-            Faça upgrade para Premium e tenha acesso ilimitado!
+            {isInTrial ? (
+              <>
+                Seu período de teste de <strong>14 dias</strong> terminou.
+                Assine o Premium para continuar aproveitando todos os recursos!
+              </>
+            ) : (
+              <>
+                Você já usou <strong>{agendamentosUsados}/{limite}</strong> agendamentos este mês.
+                Faça upgrade para Premium e tenha acesso ilimitado!
+              </>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -64,12 +84,14 @@ export default function PaywallModal({ open, onOpenChange, agendamentosUsados, l
             </div>
           </div>
 
-          <div className="bg-accent/10 rounded-lg p-4 text-center border border-accent/20">
-            <p className="text-sm font-medium">💡 Oferta Especial</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Faça upgrade agora e ganhe 30 dias de teste grátis!
-            </p>
-          </div>
+          {!isInTrial && (
+            <div className="bg-accent/10 rounded-lg p-4 text-center border border-accent/20">
+              <p className="text-sm font-medium">🎁 Novo aqui?</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Novos usuários ganham 14 dias de Premium grátis!
+              </p>
+            </div>
+          )}
         </div>
 
         <AlertDialogFooter className="flex-col sm:flex-col gap-2">

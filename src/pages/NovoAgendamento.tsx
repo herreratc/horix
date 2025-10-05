@@ -50,18 +50,28 @@ export default function NovoAgendamento() {
       return;
     }
 
-    // Load profile to check plan limits
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    try {
+      // Check premium access using edge function
+      const { data: accessData, error } = await supabase.functions.invoke('check-premium-access');
+      
+      if (error) throw error;
 
-    setProfile(profileData);
+      // Set profile data
+      setProfile({
+        plano: accessData.plano,
+        agendamentos_mes: accessData.agendamentosUsados,
+        subscription_status: accessData.subscriptionStatus,
+        isInTrial: accessData.isInTrial,
+        trialDaysLeft: accessData.trialDaysLeft
+      });
 
-    // Check if user has reached limit - show paywall instead of redirect
-    if (profileData?.plano === "free" && profileData.agendamentos_mes >= 30) {
-      setShowPaywall(true);
+      // Show paywall if user can't create more appointments
+      if (!accessData.canCreate) {
+        setShowPaywall(true);
+      }
+    } catch (error) {
+      console.error('Error checking premium access:', error);
+      toast.error("Erro ao verificar limites");
     }
   };
 
@@ -122,9 +132,19 @@ export default function NovoAgendamento() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check limit again before submitting
-    if (profile?.plano === "free" && profile.agendamentos_mes >= 30) {
-      setShowPaywall(true);
+    // Re-check limit before submitting
+    try {
+      const { data: accessData, error } = await supabase.functions.invoke('check-premium-access');
+      
+      if (error) throw error;
+      
+      if (!accessData.canCreate) {
+        setShowPaywall(true);
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking limits:', error);
+      toast.error("Erro ao verificar limites");
       return;
     }
 
@@ -308,6 +328,8 @@ Qualquer dúvida, estou à disposição! 😊`;
         onOpenChange={setShowPaywall}
         agendamentosUsados={profile?.agendamentos_mes || 0}
         limite={30}
+        isInTrial={profile?.isInTrial}
+        trialDaysLeft={profile?.trialDaysLeft}
       />
 
       <RecorrenciaDialog
@@ -332,12 +354,22 @@ Qualquer dúvida, estou à disposição! 😊`;
             </div>
           </div>
 
-          {profile?.plano === "free" && (
+          {profile && (
             <Card className="border-accent">
               <CardContent className="pt-6">
-                <p className="text-sm">
-                  <strong>Plano Free:</strong> {profile.agendamentos_mes}/30 agendamentos este mês
-                </p>
+                {profile.isInTrial ? (
+                  <p className="text-sm">
+                    <strong>Trial Premium:</strong> {profile.trialDaysLeft} dias restantes • {profile.agendamentos_mes} agendamentos criados
+                  </p>
+                ) : profile.plano === 'premium' ? (
+                  <p className="text-sm">
+                    <strong>Plano Premium:</strong> Agendamentos ilimitados • {profile.agendamentos_mes} criados este mês
+                  </p>
+                ) : (
+                  <p className="text-sm">
+                    <strong>Plano Free:</strong> {profile.agendamentos_mes}/30 agendamentos este mês
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}
