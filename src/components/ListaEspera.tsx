@@ -31,24 +31,39 @@ export const ListaEspera = () => {
 
   const loadListaEspera = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: listaData, error } = await supabase
       .from("lista_espera")
-      .select(`
-        *,
-        clientes (
-          nome,
-          whatsapp
-        )
-      `)
+      .select("*")
+      .eq("user_id", user.id)
       .eq("status", "aguardando")
       .order("data")
       .order("hora_preferencia");
 
     if (error) {
       toast.error("Erro ao carregar lista de espera");
-    } else {
-      setItens(data || []);
+      setLoading(false);
+      return;
     }
+
+    // Buscar dados dos clientes separadamente
+    if (listaData && listaData.length > 0) {
+      const clienteIds = listaData.map(item => item.cliente_id);
+      const { data: clientesData } = await supabase
+        .from("clientes")
+        .select("id, nome, whatsapp")
+        .in("id", clienteIds);
+
+      const itensComClientes = listaData.map(item => ({
+        ...item,
+        clientes: clientesData?.find(c => c.id === item.cliente_id) || { nome: "Cliente não encontrado" }
+      }));
+
+      setItens(itensComClientes as any);
+    }
+    
     setLoading(false);
   };
 
