@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save, LogOut, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { LinkAgendamentoQR } from "@/components/LinkAgendamentoQR";
 
 const DIAS_SEMANA = [
   { value: 1, label: "Segunda-feira" },
@@ -301,6 +302,9 @@ export default function Configuracoes() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Link de Agendamento Público */}
+          {user && <LinkAgendamentoQR userId={user.id} userName={nome} />}
 
           {/* Plan Info */}
           <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 backdrop-blur-sm">

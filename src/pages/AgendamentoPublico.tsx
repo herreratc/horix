@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, CheckCircle, Sparkles, User, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -27,6 +28,13 @@ interface Profile {
   whatsapp?: string;
 }
 
+interface Servico {
+  id: string;
+  nome: string;
+  valor?: number;
+  duracao?: number;
+}
+
 interface HorarioDisponivel {
   data: string;
   horarios: string[];
@@ -38,13 +46,14 @@ export default function AgendamentoPublico() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [servicos, setServicos] = useState<Servico[]>([]);
   const [horariosDisponiveis, setHorariosDisponiveis] = useState<HorarioDisponivel[]>([]);
   
   // Form state
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [servico, setServico] = useState("");
+  const [servicoId, setServicoId] = useState("");
   const [dataSelecionada, setDataSelecionada] = useState("");
   const [horaSelecionada, setHoraSelecionada] = useState("");
   const [success, setSuccess] = useState(false);
@@ -74,6 +83,16 @@ export default function AgendamentoPublico() {
     // Use first result from RPC call
     const profile = profileData[0];
     setProfile(profile);
+
+    // Load services
+    const { data: servicosData } = await supabase
+      .from("servicos")
+      .select("id, nome, valor, duracao")
+      .eq("user_id", userId)
+      .eq("ativo", true)
+      .order("nome");
+
+    setServicos(servicosData || []);
 
     // Load available times for next 7 days (excluding past dates)
     const proximos7Dias: HorarioDisponivel[] = [];
@@ -146,12 +165,17 @@ export default function AgendamentoPublico() {
     }
 
     // Validate input
+    if (!servicoId) {
+      toast.error("Selecione um serviço");
+      return;
+    }
+
     try {
       agendamentoPublicoSchema.parse({
         nomeCliente: nome,
         emailCliente: email,
         whatsappCliente: whatsapp,
-        servico: servico,
+        servico: servicoId, // Just for validation
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -167,6 +191,9 @@ export default function AgendamentoPublico() {
         throw new Error("Link inválido");
       }
 
+      // Get selected service name
+      const selectedServico = servicos.find(s => s.id === servicoId);
+      
       // Call secure backend validation function
       const { data, error } = await supabase.functions.invoke('validate-booking', {
         body: {
@@ -174,7 +201,8 @@ export default function AgendamentoPublico() {
           clientName: nome,
           clientEmail: email,
           clientWhatsApp: whatsapp,
-          servico: servico,
+          servicoId: servicoId,
+          servicoNome: selectedServico?.nome,
           selectedDate: dataSelecionada,
           selectedTime: horaSelecionada
         }
@@ -446,14 +474,30 @@ export default function AgendamentoPublico() {
                   <Sparkles className="h-4 w-4 text-primary" />
                   Serviço Desejado *
                 </Label>
-                <Input
-                  id="servico"
-                  placeholder="Ex: Consulta, Sessão, Atendimento..."
-                  value={servico}
-                  onChange={(e) => setServico(e.target.value)}
-                  className="h-12 text-base"
-                  required
-                />
+                <Select value={servicoId} onValueChange={setServicoId} required>
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Selecione o serviço" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {servicos.map((servico) => (
+                      <SelectItem key={servico.id} value={servico.id}>
+                        <div className="flex items-center justify-between w-full gap-4">
+                          <span>{servico.nome}</span>
+                          {servico.valor && (
+                            <span className="text-sm text-muted-foreground">
+                              R$ {servico.valor.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {servicos.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum serviço disponível no momento
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>

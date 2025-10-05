@@ -11,7 +11,8 @@ interface BookingRequest {
   clientName: string;
   clientEmail: string;
   clientWhatsApp: string;
-  servico: string;
+  servicoId: string;
+  servicoNome?: string;
   selectedDate: string;
   selectedTime: string;
 }
@@ -26,7 +27,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    // Fix IP address parsing - take only the first IP when multiple proxies
+    const rawIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const clientIP = rawIP.split(',')[0].trim();
+    
     const bookingData: BookingRequest = await req.json();
 
     console.log('[validate-booking] Request from IP:', clientIP);
@@ -177,7 +181,7 @@ serve(async (req) => {
         cliente_id: clientId,
         data: bookingData.selectedDate,
         hora: bookingData.selectedTime,
-        servico: bookingData.servico,
+        servico: bookingData.servicoNome || 'Serviço',
         status: 'agendado',
         canal_lembrete: 'whatsapp'
       })
