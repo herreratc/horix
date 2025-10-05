@@ -12,6 +12,7 @@ import PaywallModal from "@/components/PaywallModal";
 import { RecorrenciaDialog } from "@/components/RecorrenciaDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { addDays, addWeeks, addMonths, isBefore } from "date-fns";
+import { sanitizeForWhatsApp, formatBrazilianPhone, agendamentoSchema } from "@/lib/validation";
 
 interface Cliente {
   id: string;
@@ -127,6 +128,20 @@ export default function NovoAgendamento() {
       return;
     }
 
+    // SECURITY: Validate input data
+    try {
+      agendamentoSchema.parse({
+        servico,
+        valor: valor ? parseFloat(valor) : undefined,
+        data,
+        hora,
+        cliente_id: clienteId,
+      });
+    } catch (error: any) {
+      toast.error(error.errors?.[0]?.message || "Dados inválidos");
+      return;
+    }
+
     // Validar data (não pode ser no passado)
     const dataAgendamento = new Date(data + 'T00:00:00');
     const hoje = new Date();
@@ -209,72 +224,67 @@ export default function NovoAgendamento() {
       
       // Abrir WhatsApp automaticamente se cliente tiver WhatsApp
       if (novoAgendamento?.clientes?.whatsapp) {
-        let telefone = novoAgendamento.clientes.whatsapp.replace(/\D/g, "");
-        
-        // Remover o 55 se já existir para evitar duplicação
-        if (telefone.startsWith("55")) {
-          telefone = telefone.substring(2);
-        }
-        
-        // Validar se o telefone tem tamanho correto (10-11 dígitos no Brasil, sem código do país)
-        if (telefone.length < 10 || telefone.length > 11) {
-          toast.error("Número de WhatsApp inválido. Verifique o cadastro do cliente.");
-          navigate("/agenda");
-          return;
-        }
-        
-        const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long'
-        });
-        
-        const mensagem = `Olá, ${novoAgendamento.clientes.nome}! 👋
+        try {
+          // SECURITY: Validate and format phone number
+          const telefone = formatBrazilianPhone(novoAgendamento.clientes.whatsapp);
+          
+          const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long'
+          });
+          
+          // SECURITY: Sanitize all user inputs
+          const nomeSeguro = sanitizeForWhatsApp(novoAgendamento.clientes.nome);
+          const servicoSeguro = servico ? sanitizeForWhatsApp(servico) : '';
+          
+          const mensagem = `Olá, ${nomeSeguro}! 👋
 
 📅 *Confirmação de Agendamento*
 
-${servico ? `🔹 Serviço: *${servico}*\n` : ''}🔹 Data: *${dataFormatada}*
+${servicoSeguro ? `🔹 Serviço: *${servicoSeguro}*\n` : ''}🔹 Data: *${dataFormatada}*
 🔹 Horário: *${hora}*
 
 Seu agendamento foi confirmado! Te espero no horário marcado.
 
 Qualquer dúvida, estou à disposição! 😊`;
-        
-        const mensagemEncoded = encodeURIComponent(mensagem);
-        
-        // Tentar protocolo whatsapp:// primeiro (abre app direto no mobile)
-        const deepLink = `whatsapp://send?phone=55${telefone}&text=${mensagemEncoded}`;
-        // Fallback para wa.me (funciona em desktop e mobile)
-        const webLink = `https://wa.me/55${telefone}?text=${mensagemEncoded}`;
-        
-        console.log("Abrindo WhatsApp para:", telefone);
-        
-        // Detectar se é mobile
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-          // No mobile, tenta abrir o app direto
-          window.location.href = deepLink;
-          toast.success("WhatsApp aberto! Envie a confirmação para o cliente 💬", { 
-            duration: 3000 
-          });
-        } else {
-          // No desktop, abre em nova aba
-          const whatsappWindow = window.open(webLink, "_blank");
           
-          if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
-            toast.error("Pop-up bloqueado! Clique no botão para abrir o WhatsApp", { 
-              duration: 6000,
-              action: {
-                label: "Abrir WhatsApp",
-                onClick: () => window.open(webLink, "_blank")
-              }
-            });
-          } else {
-            toast.success("WhatsApp Web aberto! Envie a confirmação em 1 clique 💬", { 
+          const mensagemEncoded = encodeURIComponent(mensagem);
+          
+          // Tentar protocolo whatsapp:// primeiro (abre app direto no mobile)
+          const deepLink = `whatsapp://send?phone=55${telefone}&text=${mensagemEncoded}`;
+          // Fallback para wa.me (funciona em desktop e mobile)
+          const webLink = `https://wa.me/55${telefone}?text=${mensagemEncoded}`;
+          
+          // Detectar se é mobile
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          
+          if (isMobile) {
+            // No mobile, tenta abrir o app direto
+            window.location.href = deepLink;
+            toast.success("WhatsApp aberto! Envie a confirmação para o cliente 💬", { 
               duration: 3000 
             });
+          } else {
+            // No desktop, abre em nova aba
+            const whatsappWindow = window.open(webLink, "_blank");
+            
+            if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+              toast.error("Pop-up bloqueado! Clique no botão para abrir o WhatsApp", { 
+                duration: 6000,
+                action: {
+                  label: "Abrir WhatsApp",
+                  onClick: () => window.open(webLink, "_blank")
+                }
+              });
+            } else {
+              toast.success("WhatsApp Web aberto! Envie a confirmação em 1 clique 💬", { 
+                duration: 3000 
+              });
+            }
           }
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Erro ao abrir WhatsApp");
         }
       } else {
         toast.info("Cliente não tem WhatsApp cadastrado. Adicione nas configurações do cliente.");
@@ -424,6 +434,7 @@ Qualquer dúvida, estou à disposição! 😊`;
                     id="valor"
                     type="number"
                     step="0.01"
+                    min="0"
                     placeholder="0.00"
                     value={valor}
                     onChange={(e) => setValor(e.target.value)}

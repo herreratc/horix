@@ -14,42 +14,61 @@ serve(async (req) => {
   try {
     const { telefone, mensagem } = await req.json();
     
-    console.log('Enviando WhatsApp para:', telefone);
+    // SECURITY: Validate inputs
+    if (!telefone || !mensagem) {
+      throw new Error('Missing required parameters');
+    }
+    
+    console.log('Sending WhatsApp message');
 
     const evolutionApiUrl = Deno.env.get('EVOLUTION_API_URL');
+    const evolutionApiKey = Deno.env.get('EVOLUTION_API_KEY');
+    
     if (!evolutionApiUrl) {
       throw new Error('EVOLUTION_API_URL não configurada');
     }
+    
+    if (!evolutionApiKey) {
+      throw new Error('EVOLUTION_API_KEY não configurada');
+    }
 
-    // Limpar telefone (remover caracteres especiais)
+    // SECURITY: Sanitize and validate phone number
     const telefoneLimpo = telefone.replace(/\D/g, "");
+    
+    // Validate phone number length (10-11 digits for Brazil)
+    if (telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
+      throw new Error('Invalid phone number format');
+    }
     
     // Garantir código do país (Brasil)
     const telefoneCompleto = telefoneLimpo.startsWith("55") 
       ? telefoneLimpo 
       : `55${telefoneLimpo}`;
+    
+    // SECURITY: Limit message length
+    const mensagemSegura = mensagem.slice(0, 4096);
 
     // Enviar mensagem via Evolution API
     const response = await fetch(`${evolutionApiUrl}/message/sendText`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': Deno.env.get('EVOLUTION_API_KEY') || '',
+        'apikey': evolutionApiKey,
       },
       body: JSON.stringify({
         number: telefoneCompleto,
-        text: mensagem,
+        text: mensagemSegura,
       }),
     });
 
     const data = await response.json();
     
     if (!response.ok) {
-      console.error('Erro Evolution API:', data);
+      console.error('Evolution API error - status:', response.status);
       throw new Error(data.message || 'Falha ao enviar mensagem');
     }
 
-    console.log('Mensagem enviada com sucesso:', data);
+    console.log('Message sent successfully');
 
     return new Response(
       JSON.stringify({ success: true, data }),

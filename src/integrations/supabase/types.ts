@@ -93,6 +93,39 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          changed_data: Json | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          record_id: string | null
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changed_data?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          record_id?: string | null
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changed_data?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          record_id?: string | null
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           cpf: string | null
@@ -375,11 +408,51 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          event_type: string
+          id: string
+          payload: Json
+          processed: boolean | null
+          processed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          event_type: string
+          id?: string
+          payload: Json
+          processed?: boolean | null
+          processed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed?: boolean | null
+          processed_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      insert_notification_log: {
+        Args: {
+          p_agendamento_id: string
+          p_canal: string
+          p_erro_mensagem?: string
+          p_status: string
+          p_tipo: string
+        }
+        Returns: string
+      }
       reset_monthly_counter: {
         Args: Record<PropertyKey, never>
         Returns: undefined

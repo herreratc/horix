@@ -14,7 +14,8 @@ serve(async (req) => {
   try {
     const { title, price, userId } = await req.json();
     
-    console.log('Creating Mercado Pago preference:', { title, price, userId });
+    // Log request (without sensitive data)
+    console.log('Creating Mercado Pago preference:', { hasTitle: !!title, hasPrice: !!price, hasUserId: !!userId });
 
     const accessToken = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN');
     if (!accessToken) {
@@ -44,8 +45,6 @@ serve(async (req) => {
       },
     };
 
-    console.log('Sending preference to Mercado Pago:', JSON.stringify(preference));
-
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
@@ -58,11 +57,11 @@ serve(async (req) => {
     const data = await response.json();
     
     if (!response.ok) {
-      console.error('Mercado Pago API error:', data);
+      console.error('Mercado Pago API error - status:', response.status);
       throw new Error(data.message || 'Failed to create preference');
     }
 
-    console.log('Preference created successfully:', data.id);
+    console.log('Preference created successfully');
 
     return new Response(
       JSON.stringify({ 

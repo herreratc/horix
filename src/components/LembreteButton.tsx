@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeForWhatsApp, formatBrazilianPhone } from "@/lib/validation";
 
 interface LembreteButtonProps {
   clienteNome: string;
@@ -23,33 +24,41 @@ export default function LembreteButton({
       return;
     }
 
-    // Remove all non-numeric characters from phone
-    const telefone = clienteWhatsapp.replace(/\D/g, "");
-    
-    // Format date
-    const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long'
-    });
-    
-    // Create message - Professional and friendly
-    const mensagem = `Olá, ${clienteNome}! 👋
+    try {
+      // Validate and format phone number
+      const telefone = formatBrazilianPhone(clienteWhatsapp);
+      
+      // Format date
+      const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString("pt-BR", {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long'
+      });
+      
+      // SECURITY: Sanitize all user inputs
+      const nomeSeguro = sanitizeForWhatsApp(clienteNome);
+      const servicoSeguro = servico ? sanitizeForWhatsApp(servico) : '';
+      
+      // Create message - Professional and friendly
+      const mensagem = `Olá, ${nomeSeguro}! 👋
 
 📅 *Lembrete de Agendamento*
 
-${servico ? `🔹 Serviço: *${servico}*\n` : ''}🔹 Data: *${dataFormatada}*
+${servicoSeguro ? `🔹 Serviço: *${servicoSeguro}*\n` : ''}🔹 Data: *${dataFormatada}*
 🔹 Horário: *${hora}*
 
 Estou te esperando! Caso precise remarcar ou cancelar, me avise com antecedência.
 
 Até breve! 😊`;
-    
-    // Open WhatsApp Web
-    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, "_blank");
-    
-    toast.success("WhatsApp aberto! Envie a mensagem 💬");
+      
+      // Open WhatsApp Web
+      const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, "_blank");
+      
+      toast.success("WhatsApp aberto! Envie a mensagem 💬");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao abrir WhatsApp");
+    }
   };
 
   return (
