@@ -149,6 +149,11 @@ export default function NovoAgendamento() {
     }
 
     // SECURITY: Validate input data
+    if (!servico || servico.trim() === "") {
+      toast.error("O serviço é obrigatório");
+      return;
+    }
+
     try {
       agendamentoSchema.parse({
         servico,
@@ -451,12 +456,13 @@ Qualquer dúvida, estou à disposição! 😊`;
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="servico">Serviço</Label>
+                  <Label htmlFor="servico">Serviço *</Label>
                   <Input
                     id="servico"
                     placeholder="Ex: Consulta, Sessão, Atendimento..."
                     value={servico}
                     onChange={(e) => setServico(e.target.value)}
+                    required
                   />
                 </div>
 

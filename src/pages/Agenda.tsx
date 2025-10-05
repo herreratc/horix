@@ -365,6 +365,13 @@ export default function Agenda() {
                       <p className="text-xs text-muted-foreground">{agend.servico}</p>
                     )}
                     <div className="flex flex-wrap gap-2 mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/editar-agendamento/${agend.id}`)}
+                      >
+                        Editar
+                      </Button>
                       {agend.status !== "cancelado" && agend.clientes && (
                         <>
                           <LembreteButton
