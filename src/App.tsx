@@ -18,6 +18,7 @@ import Configuracoes from "./pages/Configuracoes";
 import Servicos from "./pages/Servicos";
 import AgendamentoPublico from "./pages/AgendamentoPublico";
 import Manual from "./pages/Manual";
+import Templates from "./pages/Templates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/servicos" element={<Servicos />} />
+          <Route path="/templates" element={<Templates />} />
           <Route path="/manual" element={<Manual />} />
           <Route path="/agendamento/:userId" element={<AgendamentoPublico />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
