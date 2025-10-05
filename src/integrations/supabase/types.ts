@@ -100,6 +100,7 @@ export type Database = {
           created_at: string | null
           id: string
           ip_address: unknown | null
+          metadata: Json | null
           record_id: string | null
           table_name: string
           user_id: string | null
@@ -110,6 +111,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           ip_address?: unknown | null
+          metadata?: Json | null
           record_id?: string | null
           table_name: string
           user_id?: string | null
@@ -120,6 +122,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           ip_address?: unknown | null
+          metadata?: Json | null
           record_id?: string | null
           table_name?: string
           user_id?: string | null
@@ -443,6 +446,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_profile: {
+        Args: { profile_id: string }
+        Returns: {
+          horario_fim: string
+          horario_inicio: string
+          id: string
+          nome: string
+          profissao: string
+        }[]
+      }
       insert_notification_log: {
         Args: {
           p_agendamento_id: string

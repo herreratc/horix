@@ -59,20 +59,19 @@ export default function AgendamentoPublico() {
 
     setLoading(true);
 
-    // Load professional profile
+    // Load professional profile using secure function (only safe fields)
     const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("profissao, horario_inicio, horario_fim, nome, whatsapp")
-      .eq("id", userId)
-      .single();
+      .rpc("get_public_profile", { profile_id: userId });
 
-    if (profileError || !profileData) {
+    if (profileError || !profileData || profileData.length === 0) {
       toast.error("Profissional não encontrado");
       setLoading(false);
       return;
     }
 
-    setProfile(profileData);
+    // Use first result from RPC call
+    const profile = profileData[0];
+    setProfile(profile);
 
     // Load available times for next 7 days (excluding past dates)
     const proximos7Dias: HorarioDisponivel[] = [];
@@ -97,8 +96,8 @@ export default function AgendamentoPublico() {
       
       // Generate available times
       const horarios = gerarHorarios(
-        profileData.horario_inicio,
-        profileData.horario_fim,
+        profile.horario_inicio,
+        profile.horario_fim,
         horariosOcupados
       );
 
@@ -165,41 +164,38 @@ export default function AgendamentoPublico() {
         throw new Error("Link inválido");
       }
 
-      // Create client
-      const { data: clienteData, error: clienteError } = await supabase
-        .from("clientes")
-        .insert([{
-          user_id: userId,
-          nome,
-          email: email || null,
-          whatsapp: whatsapp || null,
-        }])
-        .select()
-        .single();
+      // Call secure backend validation function
+      const { data, error } = await supabase.functions.invoke('validate-booking', {
+        body: {
+          userId,
+          clientName: nome,
+          clientEmail: email,
+          clientWhatsApp: whatsapp,
+          selectedDate: dataSelecionada,
+          selectedTime: horaSelecionada
+        }
+      });
 
-      if (clienteError) throw clienteError;
+      if (error) throw error;
 
-      // Create appointment
-      const { error: agendError } = await supabase
-        .from("agendamentos")
-        .insert([{
-          user_id: userId,
-          cliente_id: clienteData.id,
-          data: dataSelecionada,
-          hora: horaSelecionada,
-          duracao: 60,
-          status: "agendado",
-          canal_lembrete: "email"
-        }]);
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
 
-      if (agendError) throw agendError;
+      // Update profile state with WhatsApp from backend (shown only after successful booking)
+      if (data?.professionalWhatsApp) {
+        setProfile(prev => prev ? {
+          ...prev,
+          whatsapp: data.professionalWhatsApp,
+          nome: data.professionalName || prev.nome
+        } : null);
+      }
 
       setSuccess(true);
       toast.success("Agendamento realizado com sucesso!");
     } catch (error: any) {
-      const errorMessage = error?.message?.includes("duplicate") 
-        ? "Já existe um agendamento para este horário"
-        : "Erro ao criar agendamento. Tente novamente.";
+      const errorMessage = error?.message || "Erro ao criar agendamento. Tente novamente.";
       toast.error(errorMessage);
     } finally {
       setSubmitting(false);
