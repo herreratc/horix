@@ -35,7 +35,45 @@ serve(async (req) => {
       .from('profiles')
       .select('plano, trial_ends_at, subscription_status, agendamentos_mes')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
+
+    // If profile doesn't exist, create it
+    if (!profile) {
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          plano: 'trial',
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          subscription_status: 'none',
+          agendamentos_mes: 0,
+          profissao: 'pending'
+        })
+        .select('plano, trial_ends_at, subscription_status, agendamentos_mes')
+        .single();
+
+      if (createError || !newProfile) {
+        throw new Error('Failed to create profile');
+      }
+
+      const now = new Date();
+      const trialEndsAt = new Date(newProfile.trial_ends_at);
+
+      return new Response(
+        JSON.stringify({
+          hasPremiumAccess: true,
+          canCreate: true,
+          plano: 'trial',
+          subscriptionStatus: 'none',
+          agendamentosUsados: 0,
+          limite: 999999,
+          isInTrial: true,
+          trialDaysLeft: 14,
+          trialEndsAt: trialEndsAt.toISOString(),
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (profileError) {
       throw profileError;
