@@ -23,9 +23,17 @@ const Index = () => {
             {/* Header */}
             <nav className="flex justify-between items-center mb-16 animate-fade-in">
               <img src={logo} alt="Horix" className="h-12 md:h-16" />
-              <Button onClick={() => navigate("/auth")} variant="outline" size="lg">
-                Entrar
-              </Button>
+              <div className="flex items-center gap-6">
+                <Button onClick={() => navigate("/planos")} variant="ghost">
+                  Planos
+                </Button>
+                <Button onClick={() => navigate("/sobre")} variant="ghost">
+                  Sobre
+                </Button>
+                <Button onClick={() => navigate("/auth")} variant="outline" size="lg">
+                  Entrar
+                </Button>
+              </div>
             </nav>
 
             {/* Hero Content */}
