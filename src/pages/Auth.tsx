@@ -80,12 +80,43 @@ export default function Auth() {
     setLoading(true);
 
     try {
+      // SECURITY: Rate limiting - check for recent failed login attempts
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { data: recentAttempts } = await supabase
+        .from('audit_logs')
+        .select('id')
+        .eq('action', 'login_attempt')
+        .eq('metadata->>email', email.toLowerCase())
+        .gte('created_at', oneHourAgo);
+
+      if (recentAttempts && recentAttempts.length >= 5) {
+        toast.error('Muitas tentativas de login. Aguarde 1 hora e tente novamente.');
+        setLoading(false);
+        return;
+      }
+
       const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
-      if (error) throw error;
+      if (error) {
+        // Log failed attempt
+        await supabase.from('audit_logs').insert({
+          action: 'login_attempt',
+          table_name: 'auth.users',
+          metadata: { email: email.toLowerCase(), success: false }
+        });
+        throw error;
+      }
+      
+      // Log successful login
+      await supabase.from('audit_logs').insert({
+        action: 'login_attempt',
+        table_name: 'auth.users',
+        user_id: data.user?.id,
+        metadata: { email: email.toLowerCase(), success: true }
+      });
       
       if (data.user) {
         const { data: profile } = await supabase

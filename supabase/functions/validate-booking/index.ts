@@ -79,13 +79,38 @@ serve(async (req) => {
       .replace(/\D/g, '')
       .replace(/^55/, '');
 
-    // Check for existing client (deduplication)
-    const { data: existingClient } = await supabase
+    // SECURITY: Improved client deduplication with better normalization
+    const normalizedEmail = bookingData.clientEmail.toLowerCase().trim();
+    const normalizedName = bookingData.clientName.toLowerCase().trim();
+    
+    // Fetch all clients for this professional to do smart matching
+    const { data: allClients } = await supabase
       .from('clientes')
       .select('id, nome, whatsapp, email')
-      .eq('user_id', bookingData.userId)
-      .or(`whatsapp.eq.${normalizedWhatsApp},email.ilike.${bookingData.clientEmail}`)
-      .maybeSingle();
+      .eq('user_id', bookingData.userId);
+
+    let existingClient = null;
+
+    if (allClients && allClients.length > 0) {
+      // Priority 1: Match by normalized WhatsApp (most reliable)
+      existingClient = allClients.find(c => 
+        c.whatsapp && c.whatsapp.replace(/\D/g, '') === normalizedWhatsApp
+      );
+      
+      // Priority 2: Match by normalized email
+      if (!existingClient && normalizedEmail) {
+        existingClient = allClients.find(c => 
+          c.email && c.email.toLowerCase().trim() === normalizedEmail
+        );
+      }
+      
+      // Priority 3: Match by name similarity (for cases with minimal contact info)
+      if (!existingClient && normalizedName) {
+        existingClient = allClients.find(c => 
+          c.nome && c.nome.toLowerCase().trim() === normalizedName
+        );
+      }
+    }
 
     let clientId: string;
 
@@ -93,19 +118,17 @@ serve(async (req) => {
       console.log('[validate-booking] Found existing client:', existingClient.id);
       clientId = existingClient.id;
       
-      // Update client info if different
-      const updates: any = {};
-      if (existingClient.nome !== bookingData.clientName) updates.nome = bookingData.clientName;
-      if (existingClient.whatsapp !== normalizedWhatsApp) updates.whatsapp = normalizedWhatsApp;
-      if (existingClient.email !== bookingData.clientEmail) updates.email = bookingData.clientEmail;
-
-      if (Object.keys(updates).length > 0) {
-        await supabase
-          .from('clientes')
-          .update(updates)
-          .eq('id', clientId);
-        console.log('[validate-booking] Updated existing client');
-      }
+      // Always update with latest info to keep records fresh
+      await supabase
+        .from('clientes')
+        .update({
+          nome: bookingData.clientName,
+          email: normalizedEmail,
+          whatsapp: normalizedWhatsApp,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clientId);
+      console.log('[validate-booking] Updated existing client with latest info');
     } else {
       console.log('[validate-booking] Creating new client');
       const { data: newClient, error: clientError } = await supabase
@@ -113,7 +136,7 @@ serve(async (req) => {
         .insert({
           user_id: bookingData.userId,
           nome: bookingData.clientName,
-          email: bookingData.clientEmail,
+          email: normalizedEmail,
           whatsapp: normalizedWhatsApp
         })
         .select()
