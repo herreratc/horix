@@ -16,13 +16,17 @@ export type Database = {
     Tables: {
       agendamentos: {
         Row: {
+          agendamento_pai_id: string | null
           canal_lembrete: string
           cliente_id: string
           created_at: string
           data: string
+          data_fim_recorrencia: string | null
           duracao: number
+          frequencia_recorrencia: string | null
           hora: string
           id: string
+          recorrente: boolean | null
           servico: string | null
           status: string
           updated_at: string
@@ -30,13 +34,17 @@ export type Database = {
           valor: number | null
         }
         Insert: {
+          agendamento_pai_id?: string | null
           canal_lembrete?: string
           cliente_id: string
           created_at?: string
           data: string
+          data_fim_recorrencia?: string | null
           duracao?: number
+          frequencia_recorrencia?: string | null
           hora: string
           id?: string
+          recorrente?: boolean | null
           servico?: string | null
           status?: string
           updated_at?: string
@@ -44,13 +52,17 @@ export type Database = {
           valor?: number | null
         }
         Update: {
+          agendamento_pai_id?: string | null
           canal_lembrete?: string
           cliente_id?: string
           created_at?: string
           data?: string
+          data_fim_recorrencia?: string | null
           duracao?: number
+          frequencia_recorrencia?: string | null
           hora?: string
           id?: string
+          recorrente?: boolean | null
           servico?: string | null
           status?: string
           updated_at?: string
@@ -58,6 +70,13 @@ export type Database = {
           valor?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "agendamentos_agendamento_pai_id_fkey"
+            columns: ["agendamento_pai_id"]
+            isOneToOne: false
+            referencedRelation: "agendamentos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "agendamentos_cliente_id_fkey"
             columns: ["cliente_id"]
