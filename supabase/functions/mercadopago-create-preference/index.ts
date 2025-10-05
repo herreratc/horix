@@ -43,6 +43,14 @@ serve(async (req) => {
         excluded_payment_types: [],
         installments: 12,
       },
+      // Assinatura recorrente mensal
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: parseFloat(price) || 29.90,
+        currency_id: 'BRL',
+      },
+      reason: title || 'Assinatura Premium - Horix',
     };
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {

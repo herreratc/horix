@@ -316,8 +316,8 @@ export default function Configuracoes() {
                     Limite de 30 agendamentos por mês
                   </p>
                 </div>
-                <Button onClick={() => navigate("/assinatura")} className="bg-gradient-primary hover:opacity-90">
-                  Fazer Upgrade
+                <Button onClick={() => navigate("/gerenciar-assinatura")} className="bg-gradient-primary hover:opacity-90">
+                  Gerenciar Assinatura
                 </Button>
               </div>
             </CardContent>

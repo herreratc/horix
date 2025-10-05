@@ -133,7 +133,7 @@ serve(async (req) => {
         processed: false
       });
 
-    // Mercado Pago envia notificações de pagamento
+    // Process payment notifications
     if (body.type === 'payment') {
       const paymentId = body.data?.id;
       
@@ -144,7 +144,7 @@ serve(async (req) => {
       
       console.log('Processing payment ID (length):', String(paymentId).length);
 
-      // Buscar detalhes do pagamento
+      // Fetch payment details
       const paymentResponse = await fetch(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         {
@@ -173,7 +173,7 @@ serve(async (req) => {
         hasReference: !!payment.external_reference
       });
 
-      // Se pagamento aprovado, atualizar plano do usuário
+      // If payment approved, update user plan
       if (payment.status === 'approved') {
         const userId = payment.external_reference;
         
@@ -195,17 +195,25 @@ serve(async (req) => {
         }
         
         // CRITICAL SECURITY: Verify payment amount matches expected price
-        const expectedAmount = 29.90; // Your premium plan price
+        const expectedAmount = 29.90;
         if (Math.abs(payment.transaction_amount - expectedAmount) > 0.01) {
           console.error('Payment amount mismatch');
           throw new Error('Invalid payment amount');
         }
         
         console.log('Upgrading user to premium (user exists, amount verified)');
+        
+        const subscriptionId = payment.subscription_id || payment.id;
+        const nextPeriodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
           
         const { error } = await supabase
           .from('profiles')
-          .update({ plano: 'premium' })
+          .update({ 
+            plano: 'premium',
+            subscription_id: subscriptionId,
+            subscription_status: 'active',
+            subscription_current_period_end: nextPeriodEnd
+          })
           .eq('id', userId);
 
         if (error) {
@@ -215,6 +223,74 @@ serve(async (req) => {
 
         console.log('User upgraded successfully');
       }
+    }
+    
+    // Process subscription updates
+    if (body.type === 'subscription_preapproval' || body.type === 'subscription') {
+      console.log('Processing subscription notification');
+      
+      const subscriptionId = body.data?.id;
+      
+      if (!subscriptionId) {
+        console.error('Missing subscription ID');
+        throw new Error('Invalid subscription notification');
+      }
+      
+      // Fetch subscription details
+      const subscriptionResponse = await fetch(
+        `https://api.mercadopago.com/preapproval/${subscriptionId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        }
+      );
+      
+      if (!subscriptionResponse.ok) {
+        console.error('Failed to fetch subscription details');
+        throw new Error('Subscription verification failed');
+      }
+      
+      const subscription = await subscriptionResponse.json();
+      const userId = subscription.external_reference;
+      const status = subscription.status;
+      
+      console.log('Subscription status:', status);
+      
+      // Map Mercado Pago subscription status
+      let subscriptionStatus = 'none';
+      let userPlan = 'free';
+      
+      if (status === 'authorized' || status === 'active') {
+        subscriptionStatus = 'active';
+        userPlan = 'premium';
+      } else if (status === 'paused') {
+        subscriptionStatus = 'paused';
+        userPlan = 'free';
+      } else if (status === 'cancelled' || status === 'pending') {
+        subscriptionStatus = 'cancelled';
+        userPlan = 'free';
+      }
+      
+      // Update subscription status
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          plano: userPlan,
+          subscription_id: subscriptionId,
+          subscription_status: subscriptionStatus,
+          subscription_current_period_end: subscription.next_payment_date 
+            ? new Date(subscription.next_payment_date).toISOString() 
+            : null
+        })
+        .eq('id', userId);
+      
+      if (updateError) {
+        console.error('Error updating subscription');
+        throw updateError;
+      }
+      
+      console.log('Subscription updated successfully');
     }
 
     // Mark webhook as processed

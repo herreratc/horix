@@ -313,6 +313,10 @@ export type Database = {
           nome: string | null
           plano: string
           profissao: string
+          subscription_current_period_end: string | null
+          subscription_id: string | null
+          subscription_status: string | null
+          trial_ends_at: string | null
           updated_at: string
           whatsapp: string | null
         }
@@ -325,6 +329,10 @@ export type Database = {
           nome?: string | null
           plano?: string
           profissao: string
+          subscription_current_period_end?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -337,6 +345,10 @@ export type Database = {
           nome?: string | null
           plano?: string
           profissao?: string
+          subscription_current_period_end?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
@@ -455,6 +467,10 @@ export type Database = {
           nome: string
           profissao: string
         }[]
+      }
+      has_premium_access: {
+        Args: { p_user_id: string }
+        Returns: boolean
       }
       insert_notification_log: {
         Args: {

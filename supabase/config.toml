@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.validate-booking]
 verify_jwt = false
+
+[functions.check-premium-access]
+verify_jwt = false
