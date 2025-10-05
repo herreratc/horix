@@ -16,6 +16,7 @@ const agendamentoPublicoSchema = z.object({
   nomeCliente: z.string().trim().min(1, "Nome é obrigatório").max(100, "Nome muito longo"),
   emailCliente: z.string().trim().email("Email inválido").max(255, "Email muito longo"),
   whatsappCliente: z.string().trim().regex(/^[\d\s\(\)\-\+]*$/, "WhatsApp contém caracteres inválidos").min(10, "WhatsApp deve ter pelo menos 10 dígitos").max(20, "WhatsApp muito longo"),
+  servico: z.string().trim().min(1, "Serviço é obrigatório").max(100, "Serviço muito longo"),
 });
 
 interface Profile {
@@ -43,6 +44,7 @@ export default function AgendamentoPublico() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [servico, setServico] = useState("");
   const [dataSelecionada, setDataSelecionada] = useState("");
   const [horaSelecionada, setHoraSelecionada] = useState("");
   const [success, setSuccess] = useState(false);
@@ -149,6 +151,7 @@ export default function AgendamentoPublico() {
         nomeCliente: nome,
         emailCliente: email,
         whatsappCliente: whatsapp,
+        servico: servico,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -171,6 +174,7 @@ export default function AgendamentoPublico() {
           clientName: nome,
           clientEmail: email,
           clientWhatsApp: whatsapp,
+          servico: servico,
           selectedDate: dataSelecionada,
           selectedTime: horaSelecionada
         }
@@ -435,6 +439,21 @@ export default function AgendamentoPublico() {
                     className="h-12 text-base"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="servico" className="flex items-center gap-2 text-base font-medium">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  Serviço Desejado *
+                </Label>
+                <Input
+                  id="servico"
+                  placeholder="Ex: Consulta, Sessão, Atendimento..."
+                  value={servico}
+                  onChange={(e) => setServico(e.target.value)}
+                  className="h-12 text-base"
+                  required
+                />
               </div>
             </CardContent>
           </Card>

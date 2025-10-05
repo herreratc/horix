@@ -11,6 +11,7 @@ interface BookingRequest {
   clientName: string;
   clientEmail: string;
   clientWhatsApp: string;
+  servico: string;
   selectedDate: string;
   selectedTime: string;
 }
@@ -176,6 +177,7 @@ serve(async (req) => {
         cliente_id: clientId,
         data: bookingData.selectedDate,
         hora: bookingData.selectedTime,
+        servico: bookingData.servico,
         status: 'agendado',
         canal_lembrete: 'whatsapp'
       })
