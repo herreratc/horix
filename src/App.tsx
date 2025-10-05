@@ -10,6 +10,7 @@ import GuiaInicial from "./pages/GuiaInicial";
 import Dashboard from "./pages/Dashboard";
 import Assinatura from "./pages/Assinatura";
 import GerenciarAssinatura from "./pages/GerenciarAssinatura";
+import PagamentoSucesso from "./pages/PagamentoSucesso";
 import Clientes from "./pages/Clientes";
 import ClienteForm from "./pages/ClienteForm";
 import Agenda from "./pages/Agenda";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/assinatura" element={<Assinatura />} />
           <Route path="/gerenciar-assinatura" element={<GerenciarAssinatura />} />
+          <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/clientes/novo" element={<ClienteForm />} />
           <Route path="/clientes/editar/:id" element={<ClienteForm />} />

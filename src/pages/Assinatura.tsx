@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle2, CreditCard, Sparkles } from "lucide-react";
+import { ArrowLeft, CheckCircle2, CreditCard, Sparkles, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
@@ -64,12 +64,13 @@ export default function Assinatura() {
 
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4">
-            <Sparkles className="h-8 w-8 text-primary" />
+          <div className="inline-flex items-center gap-2 bg-green-500/10 text-green-600 px-4 py-2 rounded-full text-sm font-medium mb-2">
+            <Sparkles className="h-4 w-4" />
+            🎁 14 dias grátis para experimentar
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold">Upgrade para Premium</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Comece seu Trial Premium</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Desbloqueie todo o potencial da sua agenda com recursos avançados
+            Experimente todos os recursos premium por <strong>14 dias grátis</strong>. Cancele quando quiser, sem compromisso.
           </p>
         </div>
 
@@ -184,7 +185,11 @@ export default function Assinatura() {
           <CardContent className="pt-6 space-y-6">
             {/* Price Display */}
             <div className="text-center py-8 bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 rounded-2xl border-2 border-primary/20">
-              <p className="text-sm text-muted-foreground mb-2 font-medium">Assinatura mensal</p>
+              <div className="inline-flex items-center gap-2 bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-xs font-medium mb-3">
+                <Clock className="h-3 w-3" />
+                14 dias grátis • Cancele quando quiser
+              </div>
+              <p className="text-sm text-muted-foreground mb-2 font-medium">Após o período de trial</p>
               <p className="text-6xl font-bold text-primary mb-2">{monthlyPrice}</p>
               <p className="text-lg text-muted-foreground">ou <span className="font-semibold text-foreground">12x de R$ 2,99</span></p>
             </div>
@@ -237,13 +242,13 @@ export default function Assinatura() {
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Assinar Plano Premium
+                    <Sparkles className="h-5 w-5" />
+                    Começar Trial Grátis por 14 Dias
                   </span>
                 )}
               </Button>
               <p className="text-xs text-center text-muted-foreground mt-3">
-                Ao clicar em "Assinar", você será redirecionado para o checkout seguro do Mercado Pago
+                Inicie seu trial gratuito agora. Após 14 dias, será cobrado {monthlyPrice}/mês. Cancele quando quiser.
               </p>
             </div>
 

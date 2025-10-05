@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Crown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, isSameMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -12,6 +12,7 @@ import LembretesAutomaticos from "@/components/LembretesAutomaticos";
 import CancelarAgendamentoButton from "@/components/CancelarAgendamentoButton";
 import LembretesHoje from "@/components/LembretesHoje";
 import { AgendamentoFilters } from "@/components/AgendamentoFilters";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Agendamento {
   id: string;
@@ -44,6 +45,7 @@ export default function Agenda() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
+  const [premiumAccess, setPremiumAccess] = useState<any>(null);
   
   // Filtros
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,12 +55,22 @@ export default function Agenda() {
   useEffect(() => {
     checkAuth();
     loadData();
+    checkPremiumAccess();
   }, []);
 
   const checkAuth = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       navigate("/auth");
+    }
+  };
+
+  const checkPremiumAccess = async () => {
+    try {
+      const { data } = await supabase.functions.invoke('check-premium-access');
+      setPremiumAccess(data);
+    } catch (error) {
+      console.error('Error checking premium access:', error);
     }
   };
 
@@ -166,6 +178,16 @@ export default function Agenda() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            {premiumAccess && !premiumAccess.hasPremiumAccess && premiumAccess.agendamentosUsados >= premiumAccess.limite * 0.8 && (
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/assinatura")}
+                className="gap-2 border-primary/50 text-primary hover:bg-primary/10"
+              >
+                <Crown className="h-4 w-4" />
+                Upgrade Premium
+              </Button>
+            )}
             <LembretesAutomaticos agendamentos={agendamentos} />
             <Button onClick={() => navigate("/novo-agendamento")} className="gap-2 bg-gradient-primary">
               <Plus className="h-4 w-4" />
@@ -173,6 +195,28 @@ export default function Agenda() {
             </Button>
           </div>
         </div>
+
+        {/* Premium CTA */}
+        {premiumAccess && !premiumAccess.hasPremiumAccess && (
+          <Alert className="border-primary/50 bg-gradient-to-r from-primary/10 to-accent/10">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                {premiumAccess.isInTrial 
+                  ? `Trial Premium - ${premiumAccess.trialDaysLeft} dias restantes` 
+                  : `${premiumAccess.agendamentosUsados}/${premiumAccess.limite} agendamentos usados este mês`
+                }
+              </span>
+              <Button 
+                size="sm"
+                onClick={() => navigate("/assinatura")}
+                className="ml-4"
+              >
+                {premiumAccess.isInTrial ? 'Assinar Agora' : 'Upgrade para Ilimitado'}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Lembretes Pendentes */}
         <LembretesHoje />

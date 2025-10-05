@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, TrendingUp, CheckCircle2, Plus, AlertCircle, Sparkles, Share2, Copy, Clock, DollarSign, AlertTriangle, TrendingDown } from "lucide-react";
+import { Calendar, Users, TrendingUp, CheckCircle2, Plus, AlertCircle, Sparkles, Share2, Copy, Clock, DollarSign, AlertTriangle, TrendingDown, Crown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { DashboardFinanceiro } from "@/components/DashboardFinanceiro";
+import { PremiumBadge } from "@/components/PremiumBadge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [premiumAccess, setPremiumAccess] = useState<any>(null);
   const [stats, setStats] = useState({
     agendamentos: 0,
     clientes: 0,
@@ -33,6 +38,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
+    
+    // Check for payment success
+    const paymentStatus = searchParams.get('payment');
+    if (paymentStatus === 'success') {
+      navigate('/pagamento-sucesso');
+    }
   }, []);
 
   const checkAuth = async () => {
@@ -61,6 +72,14 @@ export default function Dashboard() {
 
     console.log("Profile carregado:", data);
     setProfile(data);
+
+    // Load premium access info
+    try {
+      const { data: accessData } = await supabase.functions.invoke('check-premium-access');
+      setPremiumAccess(accessData);
+    } catch (error) {
+      console.error('Error checking premium access:', error);
+    }
   };
 
   const loadStats = async (userId: string) => {
@@ -372,17 +391,45 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="p-4 md:p-8 space-y-8">
         {/* Welcome Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Olá, <span className="text-primary font-black">{profile?.nome || profile?.profissao || "Usuário"}</span> 👋
-          </h1>
-          <p className="text-muted-foreground text-lg">Aqui está um resumo do seu dia</p>
-          {!profile?.nome && (
-            <p className="text-sm text-destructive">
-              ⚠️ Configure seu nome nas <button onClick={() => navigate("/configuracoes")} className="underline font-medium">configurações</button>
-            </p>
-          )}
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                Olá, <span className="text-primary font-black">{profile?.nome || profile?.profissao || "Usuário"}</span> 👋
+              </h1>
+              {premiumAccess && (
+                <PremiumBadge 
+                  plano={profile?.plano}
+                  isInTrial={premiumAccess.isInTrial}
+                  trialDaysLeft={premiumAccess.trialDaysLeft}
+                />
+              )}
+            </div>
+            <p className="text-muted-foreground text-lg">Aqui está um resumo do seu dia</p>
+            {!profile?.nome && (
+              <p className="text-sm text-destructive">
+                ⚠️ Configure seu nome nas <button onClick={() => navigate("/configuracoes")} className="underline font-medium">configurações</button>
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Trial/Premium Alert */}
+        {premiumAccess?.isInTrial && premiumAccess?.trialDaysLeft <= 7 && (
+          <Alert className="border-blue-500/50 bg-blue-500/10">
+            <Clock className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-600 dark:text-blue-400">
+              <strong>{premiumAccess.trialDaysLeft} dias</strong> restantes no seu trial Premium.{" "}
+              <button 
+                onClick={() => navigate("/assinatura")}
+                className="underline font-medium hover:text-blue-700"
+              >
+                Assine agora
+              </button>{" "}
+              para continuar aproveitando todos os recursos!
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Insights Banner */}
         {insights.length > 0 && (
