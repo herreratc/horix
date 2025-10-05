@@ -1,38 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, Bell, BarChart3, CheckCircle2, Zap, Shield, Star, Sparkles, ArrowRight, TrendingUp, Users, MessageSquare, CalendarCheck, ChevronDown } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { LinkAgendamentoQR } from "@/components/LinkAgendamentoQR";
 import logo from "@/assets/logo.png";
 import dashboardReal from "@/assets/dashboard-real.png";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>("");
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
-        
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('nome')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile?.nome) {
-          setUserName(profile.nome);
-        }
-      }
-    };
-    
-    checkUser();
-  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -195,26 +169,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* QR Code de Agendamento - Apenas para usuários logados */}
-      {userId && (
-        <section className="py-20 px-4 bg-background">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12 animate-fade-in">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-                Seu Link de Agendamento
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Compartilhe com seus clientes para receber agendamentos online
-              </p>
-            </div>
-            
-            <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              <LinkAgendamentoQR userId={userId} userName={userName} />
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Pricing */}
       <section className="py-20 px-4 bg-gradient-hero">

@@ -10,6 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DashboardFinanceiro } from "@/components/DashboardFinanceiro";
 import { PremiumBadge } from "@/components/PremiumBadge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LinkAgendamentoQR } from "@/components/LinkAgendamentoQR";
 
 
 export default function Dashboard() {
@@ -511,78 +512,53 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Plano Info & Link Público */}
-        <div className="grid gap-4 lg:grid-cols-2">
-          {/* Plano Status */}
-          {isFreePlan && (
-            <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-primary/10">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-lg">
-                        <Sparkles className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-lg text-foreground">Plano Free</p>
-                        <p className="text-sm text-muted-foreground">
-                          {profile.agendamentos_mes}/30 agendamentos
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      onClick={() => navigate("/assinatura")}
-                      size="sm"
-                      className="bg-gradient-primary hover:opacity-90"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Upgrade
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Uso mensal</span>
-                      <span>{Math.round(usagePercentage)}%</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-500 ${
-                          usagePercentage > 80 ? 'bg-gradient-to-r from-destructive to-accent' : 'bg-gradient-accent'
-                        }`}
-                        style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        {/* QR Code de Agendamento */}
+        <LinkAgendamentoQR userId={user.id} userName={profile?.nome} />
 
-          {/* Link Público */}
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-accent/10">
+        {/* Plano Info */}
+        {isFreePlan && (
+          <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 to-primary/10">
             <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Share2 className="h-6 w-6 text-primary-foreground" />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-accent flex items-center justify-center shadow-lg">
+                      <Sparkles className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg text-foreground">Plano Free</p>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.agendamentos_mes}/30 agendamentos
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => navigate("/assinatura")}
+                    size="sm"
+                    className="bg-gradient-primary hover:opacity-90"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Upgrade
+                  </Button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold mb-1 text-foreground">Link de Agendamento</h3>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {window.location.origin}/agendamento/{user.id}
-                  </p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Uso mensal</span>
+                    <span>{Math.round(usagePercentage)}%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 ${
+                        usagePercentage > 80 ? 'bg-gradient-to-r from-destructive to-accent' : 'bg-gradient-accent'
+                      }`}
+                      style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                    />
+                  </div>
                 </div>
-                <Button 
-                  onClick={copyLinkPublico} 
-                  size="sm"
-                  className="gap-2 bg-gradient-primary hover:opacity-90 shadow-lg"
-                >
-                  <Copy className="h-4 w-4" />
-                  Copiar
-                </Button>
               </div>
             </CardContent>
           </Card>
-        </div>
+        )}
 
         
         {/* Charts Section */}
