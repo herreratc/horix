@@ -8,9 +8,10 @@ interface CheckoutButtonProps {
   planId: string;
   planName: string;
   price: number;
+  planType?: 'monthly' | 'yearly';
 }
 
-export const CheckoutButton = ({ planId, planName, price }: CheckoutButtonProps) => {
+export const CheckoutButton = ({ planId, planName, price, planType = 'monthly' }: CheckoutButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -36,7 +37,8 @@ export const CheckoutButton = ({ planId, planName, price }: CheckoutButtonProps)
         body: {
           title: `Plano ${planName} - Horix`,
           price: price,
-          userId: user.id
+          userId: user.id,
+          planType: planType
         }
       });
 
@@ -44,6 +46,16 @@ export const CheckoutButton = ({ planId, planName, price }: CheckoutButtonProps)
         console.error("Erro ao criar preferência:", error);
         toast.error("Erro ao processar pagamento");
         return;
+      }
+
+      // Track Google Ads conversion
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-17627024311/inicio_checkout',
+          'value': price,
+          'currency': 'BRL',
+          'transaction_id': data.preferenceId
+        });
       }
 
       if (data?.init_point) {

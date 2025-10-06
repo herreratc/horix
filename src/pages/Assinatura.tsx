@@ -10,8 +10,11 @@ export default function Assinatura() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
 
   const monthlyPrice = "R$ 29,90";
+  const yearlyPrice = "R$ 240,00";
+  const yearlyMonthlyEquivalent = "R$ 20,00";
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -28,17 +31,31 @@ export default function Assinatura() {
 
     setLoading(true);
     try {
+      const planTitle = selectedPlan === 'yearly' ? 'Plano Premium Anual - Horix' : 'Plano Premium Mensal - Horix';
+      const planPrice = selectedPlan === 'yearly' ? 240.00 : 29.90;
+
       const { data, error } = await supabase.functions.invoke('mercadopago-create-preference', {
         body: {
-          title: 'Plano Premium - Horix',
-          price: 29.90,
+          title: planTitle,
+          price: planPrice,
           userId: userId,
+          planType: selectedPlan
         }
       });
 
       if (error) throw error;
 
       console.log('Preference created:', data);
+      
+      // Track Google Ads conversion
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-17627024311/inicio_checkout',
+          'value': planPrice,
+          'currency': 'BRL',
+          'transaction_id': data.preferenceId
+        });
+      }
       
       // Redirecionar para checkout do Mercado Pago
       window.location.href = data.init_point;
@@ -72,6 +89,33 @@ export default function Assinatura() {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Experimente todos os recursos premium por <strong>14 dias grátis</strong>. Cancele quando quiser, sem compromisso.
           </p>
+          
+          {/* Plan Toggle */}
+          <div className="flex items-center justify-center gap-4 pt-4">
+            <button
+              onClick={() => setSelectedPlan('monthly')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                selectedPlan === 'monthly'
+                  ? 'bg-primary text-primary-foreground shadow-lg'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => setSelectedPlan('yearly')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all relative ${
+                selectedPlan === 'yearly'
+                  ? 'bg-primary text-primary-foreground shadow-lg'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              Anual
+              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                -33%
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Comparison Cards */}
@@ -130,8 +174,25 @@ export default function Assinatura() {
               </CardTitle>
               <CardDescription>Para profissionais sérios</CardDescription>
               <div className="mt-6">
-                <span className="text-4xl font-bold text-primary">{monthlyPrice}</span>
-                <span className="text-muted-foreground text-lg">/mês</span>
+                {selectedPlan === 'yearly' ? (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-primary">{yearlyMonthlyEquivalent}</span>
+                      <span className="text-muted-foreground text-lg">/mês</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Cobrado anualmente: {yearlyPrice}
+                    </p>
+                    <p className="text-xs text-green-600 font-medium mt-1">
+                      💰 Economize R$ 119,00/ano
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-4xl font-bold text-primary">{monthlyPrice}</span>
+                    <span className="text-muted-foreground text-lg">/mês</span>
+                  </>
+                )}
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -190,8 +251,24 @@ export default function Assinatura() {
                 14 dias grátis • Cancele quando quiser
               </div>
               <p className="text-sm text-muted-foreground mb-2 font-medium">Após o período de trial</p>
-              <p className="text-6xl font-bold text-primary mb-2">{monthlyPrice}</p>
-              <p className="text-lg text-muted-foreground">ou <span className="font-semibold text-foreground">12x de R$ 2,99</span></p>
+              {selectedPlan === 'yearly' ? (
+                <>
+                  <p className="text-6xl font-bold text-primary mb-2">{yearlyPrice}</p>
+                  <p className="text-lg text-muted-foreground">
+                    ou <span className="font-semibold text-foreground">12x de R$ 20,00</span>
+                  </p>
+                  <p className="text-sm text-green-600 font-medium mt-2">
+                    💰 Equivale a {yearlyMonthlyEquivalent}/mês
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-6xl font-bold text-primary mb-2">{monthlyPrice}</p>
+                  <p className="text-lg text-muted-foreground">
+                    ou <span className="font-semibold text-foreground">12x de R$ 2,99</span>
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Payment Methods */}
@@ -248,7 +325,8 @@ export default function Assinatura() {
                 )}
               </Button>
               <p className="text-xs text-center text-muted-foreground mt-3">
-                Inicie seu trial gratuito agora. Após 14 dias, será cobrado {monthlyPrice}/mês. Cancele quando quiser.
+                Inicie seu trial gratuito agora. Após 14 dias, será cobrado{" "}
+                {selectedPlan === 'yearly' ? `${yearlyPrice} anualmente` : `${monthlyPrice}/mês`}. Cancele quando quiser.
               </p>
             </div>
 

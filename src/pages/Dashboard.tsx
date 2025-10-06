@@ -415,6 +415,57 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Premium Upgrade Banner */}
+        {profile.plano !== 'premium' && (
+          <Card className="border-2 border-primary bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="h-14 w-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg flex-shrink-0">
+                    <Crown className="h-7 w-7 text-primary-foreground" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-bold text-xl text-foreground flex items-center gap-2">
+                      Libere Todo o Potencial! 🚀
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-xl">
+                      Experimente <strong>14 dias grátis</strong> do plano Premium e tenha acesso a agendamentos ilimitados, lembretes automáticos e muito mais!
+                    </p>
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <div className="flex items-center gap-1.5 text-xs text-foreground bg-background/60 px-3 py-1.5 rounded-full">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                        Agendamentos ilimitados
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-foreground bg-background/60 px-3 py-1.5 rounded-full">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                        Lembretes WhatsApp
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-foreground bg-background/60 px-3 py-1.5 rounded-full">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                        Relatórios avançados
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 w-full md:w-auto">
+                  <Button
+                    onClick={() => navigate("/assinatura")}
+                    size="lg"
+                    className="w-full md:w-auto shadow-xl hover:shadow-2xl transition-all"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Começar Trial Grátis
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    A partir de R$ 20,00/mês no plano anual
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Trial/Premium Alert */}
         {premiumAccess?.isInTrial && premiumAccess?.trialDaysLeft <= 7 && (
           <Alert className="border-blue-500/50 bg-blue-500/10">
