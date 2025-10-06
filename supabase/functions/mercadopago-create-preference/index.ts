@@ -34,7 +34,7 @@ serve(async (req) => {
       back_urls: {
         success: `${req.headers.get('origin')}/dashboard?payment=success`,
         failure: `${req.headers.get('origin')}/assinatura?payment=failure`,
-        pending: `${req.headers.get('origin')}/assinatura?payment=pending`,
+        pending: `${req.headers.get('origin')}/dashboard?payment=pending`,
       },
       auto_return: 'approved',
       external_reference: userId,
@@ -42,15 +42,7 @@ serve(async (req) => {
       payment_methods: {
         excluded_payment_types: [],
         installments: 12,
-      },
-      // Assinatura recorrente mensal
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: 'months',
-        transaction_amount: parseFloat(price) || 29.90,
-        currency_id: 'BRL',
-      },
-      reason: title || 'Assinatura Premium - Horix',
+      }
     };
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
@@ -74,8 +66,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         preferenceId: data.id,
-        initPoint: data.init_point,
-        sandboxInitPoint: data.sandbox_init_point 
+        init_point: data.init_point,
+        sandbox_init_point: data.sandbox_init_point 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

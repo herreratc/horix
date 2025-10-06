@@ -35,15 +35,8 @@ export const CheckoutButton = ({ planId, planName, price }: CheckoutButtonProps)
       const { data, error } = await supabase.functions.invoke('mercadopago-create-preference', {
         body: {
           title: `Plano ${planName} - Horix`,
-          unit_price: price,
-          quantity: 1,
-          payer_email: user.email,
-          external_reference: user.id,
-          back_urls: {
-            success: `${window.location.origin}/dashboard?payment=success`,
-            failure: `${window.location.origin}/assinatura?payment=failure`,
-            pending: `${window.location.origin}/dashboard?payment=pending`
-          }
+          price: price,
+          userId: user.id
         }
       });
 
