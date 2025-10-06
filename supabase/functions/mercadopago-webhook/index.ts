@@ -194,10 +194,15 @@ serve(async (req) => {
           throw new Error('Invalid user reference');
         }
         
-        // CRITICAL SECURITY: Verify payment amount matches expected price
-        const expectedAmount = 29.90;
-        if (Math.abs(payment.transaction_amount - expectedAmount) > 0.01) {
-          console.error('Payment amount mismatch');
+        // CRITICAL SECURITY: Verify payment amount matches expected prices
+        const monthlyPrice = 29.90;
+        const yearlyPrice = 240.00;
+        const isValidAmount = 
+          Math.abs(payment.transaction_amount - monthlyPrice) < 0.01 || 
+          Math.abs(payment.transaction_amount - yearlyPrice) < 0.01;
+          
+        if (!isValidAmount) {
+          console.error('Payment amount mismatch:', payment.transaction_amount);
           throw new Error('Invalid payment amount');
         }
         
@@ -212,7 +217,8 @@ serve(async (req) => {
             plano: 'premium',
             subscription_id: subscriptionId,
             subscription_status: 'active',
-            subscription_current_period_end: nextPeriodEnd
+            subscription_current_period_end: nextPeriodEnd,
+            trial_ends_at: null // Clear trial when upgrading to premium
           })
           .eq('id', userId);
 

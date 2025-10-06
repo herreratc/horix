@@ -155,6 +155,34 @@ serve(async (req) => {
       clientId = newClient.id;
     }
 
+    // Check professional's plan and limits BEFORE creating appointment
+    const { data: professionalProfile } = await supabase
+      .from('profiles')
+      .select('plano, trial_ends_at, subscription_status, agendamentos_mes')
+      .eq('id', bookingData.userId)
+      .single();
+
+    if (professionalProfile) {
+      const now = new Date();
+      const trialEndsAt = professionalProfile.trial_ends_at ? new Date(professionalProfile.trial_ends_at) : null;
+      
+      // Check if professional has premium access
+      const hasPremiumAccess = 
+        (professionalProfile.plano === 'premium' && professionalProfile.subscription_status === 'active') ||
+        (professionalProfile.plano === 'trial' && trialEndsAt && trialEndsAt > now);
+
+      // Check limits for free plan
+      if (!hasPremiumAccess && professionalProfile.agendamentos_mes >= 30) {
+        console.warn('[validate-booking] Professional has reached free plan limit');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Este profissional atingiu o limite de agendamentos do mês. Tente novamente mais tarde.' 
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Check for time slot conflicts
     const { data: conflicts } = await supabase
       .from('agendamentos')
@@ -194,6 +222,16 @@ serve(async (req) => {
     }
 
     console.log('[validate-booking] Appointment created successfully:', appointment.id);
+
+    // Increment monthly counter
+    if (professionalProfile) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          agendamentos_mes: professionalProfile.agendamentos_mes + 1 
+        })
+        .eq('id', bookingData.userId);
+    }
 
     // Get professional's WhatsApp for confirmation message
     const { data: profile } = await supabase

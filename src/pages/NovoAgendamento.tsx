@@ -236,12 +236,12 @@ export default function NovoAgendamento() {
         );
       }
 
-      // Update monthly counter
+      // Update monthly counter - count main appointment + recurring ones
       const totalAgendamentos = 1 + totalRecorrentes;
       if (profile) {
         await supabase
           .from("profiles")
-          .update({ agendamentos_mes: profile.agendamentos_mes + 1 })
+          .update({ agendamentos_mes: profile.agendamentos_mes + totalAgendamentos })
           .eq("id", user.id);
       }
 
