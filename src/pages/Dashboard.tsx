@@ -39,12 +39,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
-    
-    // Check for payment success
-    const paymentStatus = searchParams.get('payment');
-    if (paymentStatus === 'success') {
-      navigate('/pagamento-sucesso');
-    }
   }, []);
 
   const checkAuth = async () => {

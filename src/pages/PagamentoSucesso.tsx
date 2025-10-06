@@ -13,7 +13,21 @@ export default function PagamentoSucesso() {
 
   useEffect(() => {
     loadProfile();
-  }, []);
+    
+    // Get payment details from URL params
+    const paymentId = searchParams.get('payment_id');
+    const preferenceId = searchParams.get('preference_id');
+    
+    // Track Google Ads conversion for completed purchase
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17627024311/compra_concluida',
+        'transaction_id': preferenceId || paymentId || 'unknown'
+      });
+      
+      console.log('Google Ads conversion tracked:', { preferenceId, paymentId });
+    }
+  }, [searchParams]);
 
   const loadProfile = async () => {
     try {
@@ -30,6 +44,16 @@ export default function PagamentoSucesso() {
         .single();
 
       setProfile(profileData);
+      
+      // Track conversion with value if premium
+      if (profileData?.plano === 'premium' && typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'purchase', {
+          'send_to': 'AW-17627024311/compra_concluida',
+          'value': 29.90,
+          'currency': 'BRL',
+          'transaction_id': user.id
+        });
+      }
     } catch (error) {
       console.error("Error loading profile:", error);
     } finally {

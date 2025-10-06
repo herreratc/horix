@@ -32,7 +32,7 @@ serve(async (req) => {
         }
       ],
       back_urls: {
-        success: `${req.headers.get('origin')}/dashboard?payment=success`,
+        success: `${req.headers.get('origin')}/pagamento-sucesso?status=approved&preference_id={{preference_id}}`,
         failure: `${req.headers.get('origin')}/assinatura?payment=failure`,
         pending: `${req.headers.get('origin')}/dashboard?payment=pending`,
       },
