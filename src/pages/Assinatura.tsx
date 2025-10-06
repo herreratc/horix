@@ -41,7 +41,7 @@ export default function Assinatura() {
       console.log('Preference created:', data);
       
       // Redirecionar para checkout do Mercado Pago
-      window.location.href = data.initPoint;
+      window.location.href = data.init_point;
 
     } catch (error) {
       console.error('Error creating preference:', error);
